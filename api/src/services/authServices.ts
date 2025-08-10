@@ -1,19 +1,18 @@
 import { PrismaClient } from "../generated/prisma/index.js";
 import bcrypt from "bcryptjs";
-import type { User } from "../generated/prisma";
 import jwt from "jsonwebtoken";
+import type { User } from "../utils/types.js";
+import type { User as UserPrisma } from "../generated/prisma";
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 class AuthService {
   static registerUser = async (
-    username: string,
     email: string,
     password: string,
-  ): Promise<User> => {
+  ): Promise<UserPrisma> => {
     const hashPassoword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
-        username,
         email,
         password: hashPassoword,
       },
@@ -21,14 +20,23 @@ class AuthService {
 
     return user;
   };
-  static findUserByEmail = async (email: string) => {
-    return prisma.user.findUnique({ where: { email } });
+  static findUserByEmail = async (email: string): Promise<User | null> => {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      omit: {
+        password: true,
+      },
+    });
+    return user;
   };
 
-  static loginUser = async (email: string, password: string) => {
+  static loginUser = async (
+    email: string,
+    password: string,
+  ): Promise<String> => {
     const user = await this.findUserByEmail(email);
     if (!user) throw new Error("user not found");
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password!);
     if (!isMatch) throw new Error("Invalid password");
     const token = jwt.sign({ userId: user.id }, JWT_SECRET!, {
       expiresIn: "1h",

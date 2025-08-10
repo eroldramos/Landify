@@ -4,11 +4,11 @@ import type { AuthenticatedRequest } from "../utils/types.ts";
 class AuthController {
   static signup = async (req: Request, res: Response) => {
     try {
-      const { username, email, password } = req.body;
+      const { email, password } = req.body;
       const existingUser = await AuthService.findUserByEmail(email);
       if (existingUser)
         return res.status(400).json({ message: "user already exists" });
-      const user = await AuthService.registerUser(username, email, password);
+      const user = await AuthService.registerUser(email, password);
       return res.status(201).json(user);
     } catch (error) {
       res.status(400).json({ message: "Registration failed", error });

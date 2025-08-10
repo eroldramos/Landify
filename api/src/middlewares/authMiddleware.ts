@@ -9,7 +9,7 @@ class AuthMiddleware {
     res: Response,
     next: NextFunction,
   ) => {
-    const token = req.header("x-auth-token")?.replace("Bearer", "");
+    const token = req.header("Authorization")?.replace("Bearer", "");
     if (!token) return res.status(401).json({ message: "No token provided" });
 
     try {

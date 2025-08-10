@@ -1,16 +1,15 @@
 import { Router } from "express";
-import AuthController from "../controllers/authController.ts";
-import AuthMiddleware from "../middlewares/authMiddleware.ts";
-
+import SupabaseController from "../controllers/supabaseController.ts";
+import SupabaseMiddleware from "../middlewares/supabaseMiddleware.ts";
 const router = Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /api/supabase/register:
  *   post:
  *     summary: Register a new user
  *     tags:
- *       - Auth
+ *       - Supabase
  *     requestBody:
  *       required: true
  *       content:
@@ -18,6 +17,7 @@ const router = Router();
  *           schema:
  *             type: object
  *             properties:
+ *
  *               email:
  *                 type: string
  *                 example: john@example.com
@@ -30,15 +30,15 @@ const router = Router();
  *       400:
  *         description: Bad request
  */
-router.post("/auth/register", AuthController.signup);
+router.post("/supabase/register", SupabaseController.supabaseSignup);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /api/supabase/login:
  *   post:
  *     summary: Login user
  *     tags:
- *       - Auth
+ *       - Supabase
  *     requestBody:
  *       required: true
  *       content:
@@ -58,15 +58,15 @@ router.post("/auth/register", AuthController.signup);
  *       401:
  *         description: Unauthorized
  */
-router.post("/auth/login", AuthController.login);
+router.post("/supabase/login", SupabaseController.supabaseLogin);
 
 /**
  * @swagger
- * /api/user/{id}:
+ * /api/supabase/{id}:
  *   get:
  *     summary: Get user by ID
  *     tags:
- *       - User
+ *       - Supabase
  *     parameters:
  *       - in: path
  *         name: id
@@ -83,9 +83,9 @@ router.post("/auth/login", AuthController.login);
  *         description: Unauthorized
  */
 router.get(
-  "/user/{id}",
-  AuthMiddleware.authenticate,
-  AuthController.getUserById,
+  "/supabase/{:id}",
+  SupabaseMiddleware.authenticate,
+  SupabaseController.supabaseGetUser,
 );
 
 export default router;

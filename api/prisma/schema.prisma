@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,11 +8,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  REGULAR
+  ADMIN
+}
+
+enum PropertyType {
+  APARTMENT
+  HOUSE
+  COMMERCIAL
+}
+
+enum ListingStatus {
+  FOR_SALE
+  FOR_RENT
+}
+
+//////////////////////////////////////
+// MODELS
+//////////////////////////////////////
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int? // Nullable FK
+  listingId Int? // Nullable FK
+  createdAt DateTime @default(now())
+
+  // Relations with cascade delete
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@index([listingId])
+}
+
 model User {
   id        Int      @id @default(autoincrement())
-  username  String
   email     String   @unique
   password  String
+  name      String?
+  role      Role     @default(REGULAR)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  listings  Listing[]  @relation("OwnerListings")
+  favorites Favorite[] // Will be deleted if User is deleted (handled by cascade above)
+}
+
+model Listing {
+  id           Int           @id @default(autoincrement())
+  ownerId      Int? // Nullable FK
+  owner        User?         @relation("OwnerListings", fields: [ownerId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  address      String
+  priceCents   Int
+  propertyType PropertyType
+  status       ListingStatus
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  images    Image[]
+  favorites Favorite[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([propertyType])
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  listingId Int? // Nullable FK
+  listing   Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url       String
+  altText   String?
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([listingId])
 }
