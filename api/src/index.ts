@@ -7,6 +7,8 @@ import cookieParser from "cookie-parser";
 import AuthRouter from "./routes/authRoutes.ts";
 import SupabaseRouter from "./routes/supabaseRoutes.ts";
 import ListingRouter from "./routes/listingRoutes.ts";
+import FavoriteRouter from "./routes/favoriteRoutes.ts";
+import ImageRouter from "./routes/imageRoutes.ts";
 import { setupSwagger } from "./utils/swaggerUi.ts";
 
 dotenv.config();
@@ -25,6 +27,8 @@ app.use(express.json());
 app.use("/api", AuthRouter);
 app.use("/api", SupabaseRouter);
 app.use("/api", ListingRouter);
+app.use("/api", FavoriteRouter);
+app.use("/api", ImageRouter);
 
 setupSwagger(app);
 const port = process.env.PORT || 4000;

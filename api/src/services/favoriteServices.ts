@@ -35,6 +35,28 @@ class FavoriteService {
   };
 
   /**
+   * Get all favorites for a user.
+   */
+  static getFavoriteByCompositeId = async (
+    userId: number,
+    listingId: number,
+  ): Promise<Favorite | null> => {
+    const favorite = await prisma.favorite.findUnique({
+      where: {
+        userId_listingId: {
+          userId: userId,
+          listingId: listingId,
+        },
+      },
+      include: {
+        listing: true,
+      },
+    });
+
+    return favorite;
+  };
+
+  /**
    * Remove favorite.
    */
 
@@ -52,8 +74,8 @@ class FavoriteService {
   /**
    * Delete multiple favorites.
    */
-  static deleteManyFavorites = async (id: number): Promise<Favorite> => {
-    const favorite = await prisma.favorite.delete({ where: { id } });
+  static deleteManyFavorites = async (where: Prisma.FavoriteWhereInput) => {
+    const favorite = await prisma.favorite.deleteMany({ where });
 
     return favorite;
   };
