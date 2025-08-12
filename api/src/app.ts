@@ -124,6 +124,12 @@ app.use("/api", ListingRouter);
 app.use("/api", FavoriteRouter);
 app.use("/api", ImageRouter);
 
+app.get("/", (req, res) => {
+  res.json({
+    message: "Welcome to Landify",
+  });
+});
+
 setupSwagger(app);
 
 // ------------------ GLOBAL ERROR HANDLER ------------------
