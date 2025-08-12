@@ -12,7 +12,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:4000", // Change to your API URL
+      url: process.env.SWAGGER_API_URL, // Change to your API URL
     },
   ],
   components: {
