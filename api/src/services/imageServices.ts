@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from "../generated/prisma/index.js";
-import type { Image } from "../generated/prisma";
+import type { Image } from "../generated/prisma/index.d.ts";
 
 import { createClient } from "@supabase/supabase-js";
 import { access } from "fs";

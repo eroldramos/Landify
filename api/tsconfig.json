@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ES2020",                 // modern JS target
+    "module": "NodeNext",               // Node ESM mode
+    "moduleResolution": "NodeNext",     // must match module
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "noEmit": true,
     "allowImportingTsExtensions": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true                       // since Vercel builds directly from TS
   }
 }

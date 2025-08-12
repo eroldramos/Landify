@@ -5,7 +5,7 @@ import type {
   ListingStatus,
   Prisma,
   Favorite,
-} from "../generated/prisma";
+} from "../generated/prisma/index.d.ts";
 const prisma = new PrismaClient();
 class ListingService {
   /**

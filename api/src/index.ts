@@ -153,3 +153,5 @@ const host = process.env.HOST || "localhost";
 app.listen(port, () => {
   logger.info(`server is running at http://${host}:${port}`);
 });
+
+export default app;
