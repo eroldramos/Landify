@@ -9,7 +9,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
-    "vercel-build": "echo hello"
+    "vercel-build": "prisma generate"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.9",
