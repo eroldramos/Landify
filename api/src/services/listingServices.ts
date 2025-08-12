@@ -4,6 +4,7 @@ import type {
   PropertyType,
   ListingStatus,
   Prisma,
+  Favorite,
 } from "../generated/prisma";
 const prisma = new PrismaClient();
 class ListingService {
@@ -37,45 +38,123 @@ class ListingService {
   /**
    * Get listing by ID.
    */
-  static getListingById = async (id: number): Promise<Listing | null> => {
+  static getListingById = async (
+    id: number,
+    currentUserId?: number,
+  ): Promise<
+    (Listing & { favorites: Favorite[]; favoritesCount: number }) | null
+  > => {
     const listing = await prisma.listing.findUnique({
       where: { id },
-      include: { images: true, favorites: true, owner: true },
+      include: {
+        images: true,
+        owner: true,
+        favorites: currentUserId
+          ? {
+              where: { userId: currentUserId }, // Only the current user's favorite
+            }
+          : false, // Skip favorites array if no user is given
+        _count: {
+          select: { favorites: true }, // Count total favorites
+        },
+      },
     });
-    return listing;
+
+    if (!listing) return null;
+
+    return {
+      ...listing,
+      favoritesCount: listing._count.favorites,
+    };
   };
 
   /**
    * Get listings by filter (optional).
    */
-  static getListingsByFilter = async (
-    filter: Partial<{
+  static getListingsByFilter = async ({
+    page = 1,
+    limit = 10,
+    filters = {},
+    sortBy = "updatedAt",
+    sortOrder = "desc",
+    search = "",
+    priceRange,
+    favoritedByUserId, // 👈 new param
+  }: {
+    page?: number;
+    limit?: number;
+    filters?: Partial<{
       status: ListingStatus;
       propertyType: PropertyType;
       ownerId: number;
       id: number;
-    }>,
-  ): Promise<Listing[]> => {
-    const listing = await prisma.listing.findMany({
-      where: filter,
-      include: {
-        images: true,
-        favorites: true,
-        owner: {
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            role: true,
-            createdAt: true,
-            updatedAt: true,
+    }>;
+    sortBy?: keyof Listing;
+    sortOrder?: "asc" | "desc";
+    search?: string;
+    priceRange?: { min?: number; max?: number };
+    favoritedByUserId?: number | undefined; // 👈 optional
+  }): Promise<{
+    data: Listing[];
+    total: number;
+    page: number;
+    limit: number;
+  }> => {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.ListingWhereInput = {
+      ...filters,
+      ...(search
+        ? {
+            OR: [
+              { title: { contains: search, mode: "insensitive" } },
+              { description: { contains: search, mode: "insensitive" } },
+              { address: { contains: search, mode: "insensitive" } },
+            ],
+          }
+        : {}),
+      ...(priceRange?.min !== undefined || priceRange?.max !== undefined
+        ? {
+            priceCents: {
+              ...(priceRange.min !== undefined ? { gte: priceRange.min } : {}),
+              ...(priceRange.max !== undefined ? { lte: priceRange.max } : {}),
+            },
+          }
+        : {}),
+      ...(favoritedByUserId !== undefined
+        ? {
+            favorites: {
+              some: { userId: favoritedByUserId },
+            },
+          }
+        : {}),
+    };
+
+    const [data, total] = await prisma.$transaction([
+      prisma.listing.findMany({
+        where,
+        include: {
+          images: true,
+          favorites: true,
+          owner: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              role: true,
+              createdAt: true,
+              updatedAt: true,
+            },
           },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { [sortBy]: sortOrder },
+        skip,
+        take: limit,
+      }),
+      prisma.listing.count({ where }),
+    ]);
 
-    return listing;
+    return { data, total, page, limit };
   };
 
   /**

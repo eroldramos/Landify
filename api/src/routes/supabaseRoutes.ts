@@ -60,6 +60,8 @@ router.post("/supabase/register", SupabaseController.supabaseSignup);
  */
 router.post("/supabase/login", SupabaseController.supabaseLogin);
 
+router.get("/supabase/refresh_token", SupabaseController.supabaseRefreshToken);
+
 /**
  * @swagger
  * /api/supabase/{id}:
@@ -83,7 +85,7 @@ router.post("/supabase/login", SupabaseController.supabaseLogin);
  *         description: Unauthorized
  */
 router.get(
-  "/supabase/{:id}",
+  "/supabase/current_user",
   SupabaseMiddleware.authenticate,
   SupabaseController.supabaseGetUser,
 );

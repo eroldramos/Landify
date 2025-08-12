@@ -8,6 +8,6 @@ node_modules
 
 
 *.txt
-
+/logs
 
 # /src/generated/prisma

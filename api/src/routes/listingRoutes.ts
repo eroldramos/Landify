@@ -57,8 +57,16 @@ router.delete(
   ListingController.deleteListingOne,
 );
 
-router.get("/listing/get", ListingController.getListings);
+router.get(
+  "/listing/get",
 
-router.get("/listing/get/{:id}", ListingController.getListingById);
+  ListingController.getListings,
+);
+
+router.get(
+  "/listing/get/{:id}",
+  SupabaseMiddleware.anonymousAuthenticate,
+  ListingController.getListingById,
+);
 
 export default router;

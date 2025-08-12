@@ -6375,7 +6375,6 @@ export namespace Prisma {
 
   export type ImageWhereUniqueInput = Prisma.AtLeast<{
     id?: number
-    listingId_position?: ImageListingIdPositionCompoundUniqueInput
     AND?: ImageWhereInput | ImageWhereInput[]
     OR?: ImageWhereInput[]
     NOT?: ImageWhereInput | ImageWhereInput[]
@@ -6385,7 +6384,7 @@ export namespace Prisma {
     position?: IntFilter<"Image"> | number
     createdAt?: DateTimeFilter<"Image"> | Date | string
     listing?: XOR<ListingNullableScalarRelationFilter, ListingWhereInput> | null
-  }, "id" | "listingId_position">
+  }, "id">
 
   export type ImageOrderByWithAggregationInput = {
     id?: SortOrder
@@ -7052,11 +7051,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumListingStatusFilter<$PrismaModel>
     _max?: NestedEnumListingStatusFilter<$PrismaModel>
-  }
-
-  export type ImageListingIdPositionCompoundUniqueInput = {
-    listingId: number
-    position: number
   }
 
   export type ImageCountOrderByAggregateInput = {

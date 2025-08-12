@@ -23,15 +23,18 @@ class FavoriteService {
    * Get all favorites for a user.
    */
   static getFavoritesByUser = async (userId: number): Promise<Favorite[]> => {
-    const favorite = await prisma.favorite.findMany({
+    return await prisma.favorite.findMany({
       where: { userId },
       include: {
-        listing: true,
+        user: true, // the user who added it as favorite
+        listing: {
+          include: {
+            images: true, // include listing images
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
-
-    return favorite;
   };
 
   /**

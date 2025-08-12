@@ -9,12 +9,14 @@ class AuthService {
   static registerUser = async (
     email: string,
     password: string,
+    name: string,
   ): Promise<UserPrisma> => {
     const hashPassoword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         email,
         password: hashPassoword,
+        name,
       },
     });
 

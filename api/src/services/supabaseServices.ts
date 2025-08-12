@@ -22,6 +22,14 @@ class SupabaseService {
     return data;
   };
 
+  static supabaseRefreshSession = async (refresh_token: string) => {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token,
+    });
+    if (error) throw error;
+    return data;
+  };
+
   static supabaseIsUserAuthenticated = async (
     token: string,
   ): Promise<string> => {

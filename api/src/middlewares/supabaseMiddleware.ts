@@ -20,7 +20,29 @@ class SupabaseMiddleware {
       req.currentUser = await AuthService.findUserByEmail(email);
       next();
     } catch (error) {
-      res.status(401).json({ message: "Invalid token", error });
+      return res.status(401).json({ message: "Invalid token", error });
+    }
+  };
+
+  // can be use for auth and non auth scenario
+  static anonymousAuthenticate = async (
+    req: SupabaseRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const token = req.header("Authorization")?.replace("Bearer", "");
+    if (!token) {
+      next();
+      return;
+    }
+
+    try {
+      const email = await SupabaseService.supabaseIsUserAuthenticated(token); //return email
+      console.log(email);
+      req.currentUser = await AuthService.findUserByEmail(email);
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Invalid tokesn", error });
     }
   };
 
@@ -42,7 +64,7 @@ class SupabaseMiddleware {
       req.currentUser = user;
       next();
     } catch (error) {
-      res.status(401).json({ message: "Invalid token", error });
+      return res.status(401).json({ message: "Invalid token", error });
     }
   };
 }

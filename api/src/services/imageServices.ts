@@ -71,7 +71,7 @@ class ImageService {
   ) => {
     const image = await prisma.image.createMany({
       data: images,
-      skipDuplicates: true, // optional: skips inserting duplicates if any
+      skipDuplicates: false, // optional: skips inserting duplicates if any
     });
 
     return image;

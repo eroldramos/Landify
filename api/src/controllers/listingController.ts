@@ -1,7 +1,11 @@
 import type { Request, Response } from "express";
 import ListingService from "../services/listingServices.ts";
 import type { SupabaseRequest } from "../utils/types.ts";
-import { ListingStatus, PropertyType } from "../generated/prisma/index.js";
+import type {
+  Listing,
+  ListingStatus,
+  PropertyType,
+} from "../generated/prisma/index.js";
 
 class ListingController {
   static createListingOne = async (req: SupabaseRequest, res: Response) => {
@@ -101,38 +105,89 @@ class ListingController {
 
   static getListings = async (req: Request, res: Response) => {
     try {
-      const filter: {
+      const {
+        page = "1",
+        limit = "10",
+        status,
+        propertyType,
+        ownerId,
+        id,
+        sortBy = "createdAt",
+        sortOrder = "desc",
+        search,
+        minPrice = "0",
+        maxPrice = "10000000",
+        favoritedByUserId,
+      } = req.query;
+
+      const filters: {
         status?: ListingStatus;
         propertyType?: PropertyType;
         ownerId?: number;
         id?: number;
       } = {};
 
-      if (typeof req.query.status === "string") {
-        filter.status = req.query.status as ListingStatus;
+      const priceRange: { min?: number; max?: number } = {};
+
+      if (typeof status === "string" && status) {
+        filters.status = status.toUpperCase() as ListingStatus;
+      }
+      if (typeof propertyType === "string" && propertyType) {
+        filters.propertyType = propertyType.toUpperCase() as PropertyType;
+      }
+      if (typeof ownerId === "string" && ownerId) {
+        const parsed = parseInt(ownerId, 10);
+        if (!isNaN(parsed)) filters.ownerId = parsed;
+      }
+      if (typeof id === "string" && id) {
+        const parsed = parseInt(id, 10);
+        if (!isNaN(parsed)) filters.id = parsed;
       }
 
-      if (typeof req.query.propertyType === "string") {
-        filter.propertyType = req.query.propertyType as PropertyType;
+      if (typeof minPrice === "string" && minPrice) {
+        const parsed = parseInt(minPrice, 10);
+        if (!isNaN(parsed)) priceRange.min = parsed;
+      }
+      if (typeof maxPrice === "string" && maxPrice) {
+        const parsed = parseInt(maxPrice, 10);
+        if (!isNaN(parsed)) priceRange.max = parsed;
       }
 
-      if (typeof req.query.ownerId === "string") {
-        const parsed = parseInt(req.query.ownerId, 10);
-        if (!isNaN(parsed)) filter.ownerId = parsed;
+      let favoritedFilterId: number | undefined;
+      if (favoritedByUserId && typeof favoritedByUserId === "string") {
+        const parsed = parseInt(favoritedByUserId, 10);
+        if (!isNaN(parsed)) favoritedFilterId = parsed;
       }
 
-      const listings = await ListingService.getListingsByFilter(filter);
+      const listings = await ListingService.getListingsByFilter({
+        page: parseInt(page as string, 10),
+        limit: parseInt(limit as string, 10),
+        filters,
+        sortBy: sortBy as keyof Listing,
+        sortOrder: sortOrder === "asc" ? "asc" : "desc",
+        search: typeof search === "string" ? search : undefined,
+        priceRange,
+        favoritedByUserId: favoritedFilterId, // 👈 pass it here
+      });
+
       return res.status(200).json(listings);
     } catch (error) {
-      return res.status(400).json({ message: "Listing failed", error });
+      console.error(error);
+      return res.status(400).json({ message: "Listing fetch failed", error });
     }
   };
 
-  static getListingById = async (req: Request, res: Response) => {
+  static getListingById = async (req: SupabaseRequest, res: Response) => {
     try {
       const id = req.params.id;
 
-      const listingFound = await ListingService.getListingById(parseInt(id));
+      const currentUserId = req?.currentUser?.id;
+      console.log(currentUserId, "======");
+
+      const listingFound = await ListingService.getListingById(
+        parseInt(id),
+        currentUserId,
+      );
       if (!listingFound)
         return res
           .status(400)
