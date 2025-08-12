@@ -12,7 +12,7 @@ import ListingRouter from "./routes/listingRoutes";
 import FavoriteRouter from "./routes/favoriteRoutes";
 import ImageRouter from "./routes/imageRoutes";
 import { setupSwagger } from "./utils/swaggerUi";
-import { logger } from "./utils/logger";
+// import { logger } from "./utils/logger";
 dotenv.config();
 
 const app = express();
@@ -31,10 +31,10 @@ interface Logger {
   error: (...args: unknown[]) => void;
 }
 
-// const logger: Logger = {
-//   info: (...args) => console.log("[INFO]", ...args),
-//   error: (...args) => console.error("[ERROR]", ...args),
-// };
+const logger: Logger = {
+  info: (...args) => console.log("[INFO]", ...args),
+  error: (...args) => console.error("[ERROR]", ...args),
+};
 
 // ------------------ MIDDLEWARES ------------------
 
