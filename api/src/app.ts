@@ -78,7 +78,7 @@ app.use(
     },
     frameguard: { action: "deny" },
     xssFilter: true,
-    noSniff: true,
+    noSniff: false,
     hsts: { maxAge: 31536000, includeSubDomains: true },
   }),
 );
@@ -125,10 +125,6 @@ app.use("/api", FavoriteRouter);
 app.use("/api", ImageRouter);
 
 setupSwagger(app);
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("welcome to the spicarr coding");
-});
 
 // ------------------ GLOBAL ERROR HANDLER ------------------
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
