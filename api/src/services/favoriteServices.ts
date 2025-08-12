@@ -1,5 +1,5 @@
-import { PrismaClient } from "../generated/prisma/index.js";
-import type { Listing, Prisma, Favorite } from "../generated/prisma/index.d.ts";
+import { PrismaClient } from "../generated/prisma";
+import type { Listing, Prisma, Favorite } from "../generated/prisma";
 const prisma = new PrismaClient();
 class FavoriteService {
   /**

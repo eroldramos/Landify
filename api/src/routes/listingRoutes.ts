@@ -1,9 +1,7 @@
 import { Router } from "express";
-import AuthController from "../controllers/authController.ts";
-import AuthMiddleware from "../middlewares/authMiddleware.ts";
-import ListingService from "../services/listingServices.ts";
-import ListingController from "../controllers/listingController.ts";
-import SupabaseMiddleware from "../middlewares/supabaseMiddleware.ts";
+
+import ListingController from "../controllers/listingController";
+import SupabaseMiddleware from "../middlewares/supabaseMiddleware";
 
 const router = Router();
 

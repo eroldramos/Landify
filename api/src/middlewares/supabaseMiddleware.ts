@@ -1,10 +1,9 @@
 import type { Request, Response, NextFunction } from "express";
 
-import { verifyToken } from "../utils/jwt.ts";
-import type { SupabaseRequest } from "../utils/types.ts";
+import type { SupabaseRequest } from "../utils/types";
 
-import SupabaseService from "../services/supabaseServices.ts";
-import AuthService from "../services/authServices.ts";
+import SupabaseService from "../services/supabaseServices";
+import AuthService from "../services/authServices";
 
 class SupabaseMiddleware {
   static authenticate = async (

@@ -1,8 +1,6 @@
 import type { Request, Response } from "express";
-import type { SupabaseRequest } from "../utils/types.ts";
-import FavoriteService from "../services/favoriteServices.ts";
-import multer from "multer";
-import ImageService from "../services/imageServices.ts";
+import type { SupabaseRequest } from "../utils/types";
+import ImageService from "../services/imageServices";
 
 const bucketName = "landify-bucket";
 

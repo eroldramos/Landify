@@ -1,7 +1,6 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "type": "module",
   "description": "mnj x silversjo project",
   "main": "index.ts",
   "author": "eroldramos",

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 
-import { verifyToken } from "../utils/jwt.ts";
-import type { AuthenticatedRequest } from "../utils/types.ts";
+import { verifyToken } from "../utils/jwt";
+import type { AuthenticatedRequest } from "../utils/types";
 
 class AuthMiddleware {
   static authenticate = (

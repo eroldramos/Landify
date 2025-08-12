@@ -1,7 +1,6 @@
 import { Router } from "express";
-import SupabaseMiddleware from "../middlewares/supabaseMiddleware.ts";
-import FavoriteController from "../controllers/favoriteController.ts";
-import ImageController from "../controllers/imageController.ts";
+import SupabaseMiddleware from "../middlewares/supabaseMiddleware";
+import ImageController from "../controllers/imageController";
 import multer from "multer";
 
 const router = Router();

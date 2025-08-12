@@ -1,6 +1,6 @@
-import AuthService from "../services/authServices.ts";
+import AuthService from "../services/authServices";
 import type { Request, Response } from "express";
-import type { AuthenticatedRequest } from "../utils/types.ts";
+import type { AuthenticatedRequest } from "../utils/types";
 class AuthController {
   static signup = async (req: Request, res: Response) => {
     try {

@@ -1,7 +1,7 @@
-import SupabaseService from "../services/supabaseServices.ts";
-import AuthService from "../services/authServices.ts";
+import SupabaseService from "../services/supabaseServices";
+import AuthService from "../services/authServices";
 import type { Request, Response } from "express";
-import type { AuthenticatedRequest, SupabaseRequest } from "../utils/types.ts";
+import type { AuthenticatedRequest, SupabaseRequest } from "../utils/types";
 class SupabaseController {
   static supabaseSignup = async (req: Request, res: Response) => {
     try {

@@ -1,8 +1,6 @@
 import type { Request, Response } from "express";
-import ListingService from "../services/listingServices.ts";
-import type { SupabaseRequest } from "../utils/types.ts";
-import { ListingStatus, PropertyType } from "../generated/prisma/index.js";
-import FavoriteService from "../services/favoriteServices.ts";
+import type { SupabaseRequest } from "../utils/types";
+import FavoriteService from "../services/favoriteServices";
 
 class FavoriteController {
   static addFavorite = async (req: SupabaseRequest, res: Response) => {
@@ -29,12 +27,10 @@ class FavoriteController {
     } catch (error: any) {
       if (error.code === "P2003") {
         // Prisma: record not found
-        return res
-          .status(404)
-          .json({
-            message: "Adding a not existing listing as favorite",
-            error,
-          });
+        return res.status(404).json({
+          message: "Adding a not existing listing as favorite",
+          error,
+        });
       }
       res.status(400).json({ message: "Adding favorite failed", error });
     }

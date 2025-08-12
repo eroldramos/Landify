@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import ListingService from "../services/listingServices.ts";
-import type { SupabaseRequest } from "../utils/types.ts";
+import ListingService from "../services/listingServices";
+import type { SupabaseRequest } from "../utils/types";
 import type {
   Listing,
   ListingStatus,

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import SupabaseController from "../controllers/supabaseController.ts";
-import SupabaseMiddleware from "../middlewares/supabaseMiddleware.ts";
+import SupabaseController from "../controllers/supabaseController";
+import SupabaseMiddleware from "../middlewares/supabaseMiddleware";
 const router = Router();
 
 /**

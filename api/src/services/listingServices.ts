@@ -1,11 +1,11 @@
-import { PrismaClient } from "../generated/prisma/index.js";
+import { PrismaClient } from "../generated/prisma";
 import type {
   Listing,
   PropertyType,
   ListingStatus,
   Prisma,
   Favorite,
-} from "../generated/prisma/index.d.ts";
+} from "../generated/prisma";
 const prisma = new PrismaClient();
 class ListingService {
   /**

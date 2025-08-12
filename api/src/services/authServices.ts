@@ -1,8 +1,8 @@
-import { PrismaClient } from "../generated/prisma/index.js";
+import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import type { User } from "../utils/types.ts";
-import type { User as UserPrisma } from "../generated/prisma/index.d.ts";
+import type { User } from "../utils/types";
+import type { User as UserPrisma } from "../generated/prisma";
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
 class AuthService {
