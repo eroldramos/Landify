@@ -280,7 +280,7 @@ export function PropertyListingFormPage() {
         </CardContent>
       </Card>
 
-      {isFormSaved && <ImageUpload listingId={listingId} />}
+      {isFormSaved && <ImageUpload listingId={listingId as number} />}
     </div>
   );
 }

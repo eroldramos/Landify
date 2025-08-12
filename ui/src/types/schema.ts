@@ -65,6 +65,7 @@ export type ErrorResponse = AxiosError & {
 };
 export type MessageResponse = {
   message: string;
+  id?: string;
 };
 
 export type AxiosErrorResponse = {
