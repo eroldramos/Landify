@@ -16,8 +16,8 @@ interface FiltersProps {
 }
 
 export interface FilterState {
-  propertyType: PropertyType | "ALL";
-  status: ListingStatus | "ALL";
+  propertyType: PropertyType | "";
+  status: ListingStatus | "";
   priceRange: string;
 }
 
@@ -25,14 +25,14 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
   const handlePropertyTypeChange = (value: string) => {
     onFilterChange({
       ...activeFilters,
-      propertyType: value as PropertyType | "ALL",
+      propertyType: value as PropertyType | "",
     });
   };
 
   const handleStatusChange = (value: string) => {
     onFilterChange({
       ...activeFilters,
-      status: value as ListingStatus | "ALL",
+      status: value as ListingStatus | "",
     });
   };
 
@@ -45,9 +45,9 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (activeFilters.propertyType !== "ALL") count++;
-    if (activeFilters.status !== "ALL") count++;
-    if (activeFilters.priceRange !== "ALL") count++;
+    if (activeFilters.propertyType !== "") count++;
+    if (activeFilters.status !== "") count++;
+    if (activeFilters.priceRange !== "") count++;
     return count;
   };
 

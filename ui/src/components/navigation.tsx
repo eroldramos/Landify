@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { landifyLogo } from "@/assets/images";
 import { PopoverMenu } from "./Menus";
-import { useAuthStore } from "@/store/appStore";
+import { useAppStore, useAuthStore } from "@/store/appStore";
 import { getInitials } from "@/utils/string-utils";
 import type { MenuItem } from "@/types/schema";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,8 @@ import { showToast } from "@/utils/toast-utils";
 import Swal from "sweetalert2";
 export function Navigation() {
   const { auth, setAuth } = useAuthStore();
+
+  const { search, setSearch } = useAppStore();
   const navigate = useNavigate();
 
   const menuItemsForRegular: MenuItem[] = [
@@ -155,6 +157,8 @@ export function Navigation() {
               <Input
                 placeholder="Search properties..."
                 className="pl-10 w-full"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>

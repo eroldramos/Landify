@@ -5,6 +5,7 @@ import { Filters, type FilterState } from "../components/filters";
 import { PropertyCard } from "../components/PropertyCard";
 import { useGetListings } from "@/services/listingServices";
 import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
+import { useAppStore } from "@/store/appStore";
 
 // function formatPrice(priceCents: number) {
 //   return new Intl.NumberFormat("en-US", {
@@ -16,15 +17,13 @@ import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 // }
 
 export default function PropertyListingPage() {
-  const { data, isLoading } = useGetListings({});
-
-  console.log(data);
+  const { search } = useAppStore();
   const [filters, setFilters] = useState<FilterState>({
-    propertyType: "ALL",
-    status: "ALL",
-    priceRange: "ALL",
+    propertyType: "",
+    status: "",
+    priceRange: { minPrice: 0, maxPrice: 1000000 },
   });
-
+  const { data, isLoading } = useGetListings({ ...filters, search });
   return (
     <>
       <Filters onFilterChange={setFilters} activeFilters={filters} />

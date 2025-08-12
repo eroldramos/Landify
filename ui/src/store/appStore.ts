@@ -2,6 +2,11 @@ import type { AuthStore } from "@/types/schema";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+type AppStore = {
+  search: string;
+  setSearch: (value: string) => void;
+};
+
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
@@ -14,3 +19,8 @@ export const useAuthStore = create<AuthStore>()(
     },
   ),
 );
+
+export const useAppStore = create<AppStore>((set) => ({
+  search: "",
+  setSearch: (value) => set({ search: value }),
+}));
