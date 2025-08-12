@@ -84,15 +84,21 @@ app.use(
 );
 
 // Trusted Hosts
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const host = req.hostname;
-  if (ALLOWED_HOSTS.length && !ALLOWED_HOSTS.includes(host)) {
-    return res
-      .status(403)
-      .json({ success: false, message: "Host not allowed" });
-  }
-  next();
-});
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "DELETE", "PATCH", "PUT"],
+    allowedHeaders: ["Authorization", "Content-Type"], // Remove "Access-Control-Allow-Origin"
+    credentials: true,
+    optionsSuccessStatus: 200, // to support legacy browsers with OPTIONS
+  }),
+);
 
 // Custom Logging Middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
