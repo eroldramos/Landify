@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es6",
     "module": "commonjs",
+    "outDir": "./dist",
     "strict": true,
-    "noImplicitAny": true,
-    "outDir": "dist",
-    "sourceMap": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
   "include": [
