@@ -13,9 +13,10 @@ import {
   Phone,
   ChevronLeft,
   ChevronRight,
+  EditIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetListingOne } from "@/services/listingServices";
 import { useAuthStore } from "@/store/appStore";
 import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
@@ -70,6 +71,7 @@ import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 // };
 
 export default function PropertyListingSinglePage() {
+  const navigate = useNavigate();
   const { auth } = useAuthStore();
   const { listingId } = useParams();
   const id = parseInt(listingId as string);
@@ -178,6 +180,19 @@ export default function PropertyListingSinglePage() {
                     <Share className="w-4 h-4 mr-2" />
                     Share
                   </Button>
+
+                  {auth?.role === "ADMIN" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        navigate(`/admin/list_property/edit/${listingId}`)
+                      }
+                    >
+                      <EditIcon className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

@@ -7,6 +7,8 @@ import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 import { useAppStore } from "@/store/appStore";
 import { useEffect, useState } from "react";
 import { Pagination } from "@/Pagination/Pagination";
+import { NotFound } from "@/components/404NotFound/NotFound";
+import { useNavigate } from "react-router-dom";
 
 // function formatPrice(priceCents: number) {
 //   return new Intl.NumberFormat("en-US", {
@@ -18,8 +20,9 @@ import { Pagination } from "@/Pagination/Pagination";
 // }
 
 export default function PropertyListingPage() {
-  const { filters, search } = useAppStore();
+  const { filters, search, setSearch, setFilters } = useAppStore();
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   // Sample data to demonstrate pagination
   const itemsPerPage = 5;
@@ -74,7 +77,23 @@ export default function PropertyListingPage() {
                 Sort by
               </Button>
             </div>
-          </div>
+          </div>{" "}
+          {data?.data?.data?.length === 0 && (
+            <NotFound
+              showSearchButton={false}
+              showBackButton={true}
+              onBack={() => {
+                setSearch("");
+                setFilters({
+                  propertyType: "",
+                  status: "",
+                  priceRange: [0, 1000000],
+                });
+                navigate("/");
+              }}
+              showHomeButton={false}
+            />
+          )}
           {/* Listings Grid */}
           <div className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
