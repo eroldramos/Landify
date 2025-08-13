@@ -51,12 +51,14 @@ import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 export default function PropertyListingEditPage() {
   const { listingId } = useParams();
   const id = parseInt(listingId as string);
-  const { data, isSuccess, isLoading } = useGetListingOne({ id });
+  const { data, isSuccess, isLoading, refetch } = useGetListingOne({ id });
 
   return (
     <div className="space-y-6 md:mx-[200px] md:my-[100px]">
       {isLoading && <LoadingScreen />}
-      {data?.data && <PropertyListingForm initialData={data?.data} />}
+      {isSuccess && (
+        <PropertyListingForm initialData={data?.data} refetch={refetch} />
+      )}
 
       {data?.data && (
         <ImageEditForm

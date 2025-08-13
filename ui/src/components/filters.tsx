@@ -39,7 +39,7 @@ export function Filters() {
     let count = 0;
     if (filters.propertyType !== "") count++;
     if (filters.status !== "") count++;
-    if (filters.priceRange[0] !== 0) count++;
+    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) count++;
     return count;
   };
 
@@ -92,7 +92,7 @@ export function Filters() {
         {/* Price Range Filter */}
 
         <PriceScaler
-          min={50}
+          min={0}
           max={1000000}
           step={25}
           defaultMinValue={0}

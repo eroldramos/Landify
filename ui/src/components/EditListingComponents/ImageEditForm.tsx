@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { X, Upload, ImageIcon, Trash2 } from "lucide-react";
 import { useUploadImages } from "@/services/imageServices";
 import { showToast } from "@/utils/toast-utils";
-import { invalidateQuery } from "@/utils/query-utils";
 
 interface UploadedImage {
   id: string;
@@ -29,17 +28,18 @@ interface ExistingImage {
 interface ImageUploadProps {
   existingImages?: ExistingImage[];
   propertyId: number;
+  refetch: () => void;
 }
 
 export function ImageEditForm({
   existingImages = [],
   propertyId,
+  refetch,
 }: ImageUploadProps) {
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [existingImagesState, setExistingImagesState] =
     useState<ExistingImage[]>(existingImages);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [isDeletingExisting, setIsDeletingExisting] = useState<number | null>(
     null,
   );
@@ -49,7 +49,7 @@ export function ImageEditForm({
       showToast("success", {
         message: "Successfully uploaded",
       });
-      invalidateQuery("useGetListingOne");
+      refetch();
       setImages([]); // clear previews\
     },
     (error) => {

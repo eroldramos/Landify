@@ -35,7 +35,7 @@ export const useAppStore = create<AppStore>((set) => ({
   filters: {
     propertyType: "",
     status: "",
-    priceRange: [0, 50],
+    priceRange: [0, 1000000],
   },
   setFilters: (value) => set({ filters: value }),
 }));

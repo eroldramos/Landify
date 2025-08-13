@@ -19,30 +19,28 @@ import { showToast } from "@/utils/toast-utils";
 import { invalidateQuery } from "@/utils/query-utils";
 
 interface PropertyFormData {
+  id: number;
   title: string;
   description: string;
   address: string;
   priceCents: number;
-  propertyType: "HOUSE" | "APARTMENT" | "CONDO" | "TOWNHOUSE" | "LAND";
-  status: "FOR_SALE" | "FOR_RENT" | "SOLD" | "RENTED" | "DRAFT";
+  propertyType: "HOUSE" | "APARTMENT" | "COMMERCIAL";
+  status: "FOR_SALE" | "FOR_RENT";
 }
 
 interface PropertyListingFormProps {
-  initialData: PropertyFormData & {
-    id: number;
-  };
+  initialData: PropertyFormData;
 }
 
 export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
   const [formData, setFormData] = useState<PropertyFormData>(initialData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const updatePropertyMutate = useUpdateProperty(
-    (data) => {
+    () => {
       showToast("success", {
         message: "Property details updated",
       });
-      invalidateQuery("useGetListingOne");
+      invalidateQuery(["useGetListingOne", String(formData.id)]);
     },
 
     (error) => {
@@ -74,7 +72,6 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
     // Validate required fields
     if (!formData.title.trim()) {
@@ -83,7 +80,6 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
         description: "Property title is required",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
@@ -93,7 +89,6 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
         description: "Property description is required",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
@@ -103,7 +98,6 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
         description: "Property address is required",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
@@ -113,7 +107,6 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
         description: "Property price must be greater than $0",
         variant: "destructive",
       });
-      setIsSubmitting(false);
       return;
     }
 
