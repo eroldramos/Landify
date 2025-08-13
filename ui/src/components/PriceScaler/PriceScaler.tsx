@@ -1,101 +1,70 @@
 "use client";
 
-import type React from "react";
-import { useState, useCallback } from "react";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { Slider } from "@/components/ui/slider";
 
 interface PriceScalerProps {
-  min?: number;
-  max?: number;
-  step?: number;
-  defaultMinValue?: number;
-  defaultMaxValue?: number;
-  onValueChange?: (values: [number, number]) => void;
-  className?: string;
-  formatPrice?: (price: number) => string;
+  min: number;
+  max: number;
+  step: number;
+  defaultMinValue: number;
+  defaultMaxValue: number;
+  onValueChange: (values: [number, number]) => void;
 }
 
 export function PriceScaler({
-  min = 0,
-  max = 1000,
-  step = 10,
+  min,
+  max,
+  step,
   defaultMinValue,
   defaultMaxValue,
   onValueChange,
-  className,
-  formatPrice = (price) => `$${price.toLocaleString()}`,
 }: PriceScalerProps) {
-  const [minValue, setMinValue] = useState(defaultMinValue ?? min);
-  const [maxValue, setMaxValue] = useState(defaultMaxValue ?? max);
+  const [values, setValues] = useState<[number, number]>([
+    defaultMinValue,
+    defaultMaxValue,
+  ]);
 
-  const handleMinChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = Math.min(Number(e.target.value), maxValue - step);
-      setMinValue(value);
-      onValueChange?.([value, maxValue]);
-    },
-    [maxValue, step, onValueChange],
-  );
+  useEffect(() => {
+    onValueChange(values);
+  }, [values, onValueChange]);
 
-  const handleMaxChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = Math.max(Number(e.target.value), minValue + step);
-      setMaxValue(value);
-      onValueChange?.([minValue, value]);
-    },
-    [minValue, step, onValueChange],
-  );
+  const handleValueChange = (newValues: number[]) => {
+    setValues([newValues[0], newValues[1]]);
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   return (
-    <div className={cn("w-full space-y-6", className)}>
-      <div className="text-center">
-        <h3 className="text-lg font-semibold">Price Range</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          {formatPrice(minValue)} - {formatPrice(maxValue)}
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        {/* Minimum Price Slider */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Minimum Price</label>
-            <span className="text-sm text-muted-foreground">
-              {formatPrice(minValue)}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={min}
-            max={max}
-            step={step}
-            value={minValue}
-            onChange={handleMinChange}
-            className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer slider-thumb"
-          />
-        </div>
-
-        {/* Maximum Price Slider */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium">Maximum Price</label>
-            <span className="text-sm text-muted-foreground">
-              {formatPrice(maxValue)}
-            </span>
-          </div>
-          <input
-            type="range"
-            min={min}
-            max={max}
-            step={step}
-            value={maxValue}
-            onChange={handleMaxChange}
-            className="w-full h-2 bg-secondary rounded-lg appearance-none cursor-pointer slider-thumb"
-          />
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-gray-700">
+          Property Price Range
+        </label>
+        <div className="text-sm text-gray-600">
+          {formatPrice(values[0])} - {formatPrice(values[1])}
         </div>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="px-2">
+        <Slider
+          value={values}
+          onValueChange={handleValueChange}
+          min={min}
+          max={max}
+          step={step}
+          className="w-full"
+        />
+      </div>
+
+      <div className="flex justify-between text-xs text-gray-500">
         <span>{formatPrice(min)}</span>
         <span>{formatPrice(max)}</span>
       </div>

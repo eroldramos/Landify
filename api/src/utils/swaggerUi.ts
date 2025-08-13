@@ -28,9 +28,10 @@ const swaggerDefinition = {
 };
 
 export function setupSwagger(app: Express, ROOT_FOLDER: string): void {
+  console.log(ROOT_FOLDER, "=====================================");
   const options: swaggerJSDoc.Options = {
     swaggerDefinition,
-    apis: ["./src/routes/*.ts"], // Files containing annotations
+    apis: ["./src/routes/.ts"], // Files containing annotations
   };
 
   const swaggerSpec = swaggerJSDoc(options);

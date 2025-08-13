@@ -99,22 +99,6 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
         </Select>
 
         {/* Price Range Filter */}
-        <Select
-          value={activeFilters.priceRange}
-          onValueChange={handlePriceRangeChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Price Range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Prices</SelectItem>
-            <SelectItem value="0-50000">Under $500</SelectItem>
-            <SelectItem value="50000-100000">$500 - $1,000</SelectItem>
-            <SelectItem value="100000-200000">$1,000 - $2,000</SelectItem>
-            <SelectItem value="200000-500000">$2,000 - $5,000</SelectItem>
-            <SelectItem value="500000+">$5,000+</SelectItem>
-          </SelectContent>
-        </Select>
 
         <PriceScaler
           min={50}
