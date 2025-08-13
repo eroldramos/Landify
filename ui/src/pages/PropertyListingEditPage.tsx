@@ -3,67 +3,51 @@ import { ImageEditForm } from "@/components/EditListingComponents/ImageEditForm"
 import { useParams } from "react-router-dom";
 import { useGetListingOne } from "@/services/listingServices";
 import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
+import { useEffect, useState } from "react";
 
-// const mockPropertyData = {
-//   id: 7,
-//   title: "Apartment 2 Story",
-//   description: "A beautiful apartment in the heart of the city.",
-//   address: "123 Main St, Metro City",
-//   priceCents: 50000,
-//   propertyType: "HOUSE" as const,
-//   status: "FOR_SALE" as const,
-//   images: [
-//     {
-//       id: 19,
-//       listingId: 7,
-//       url: "https://bfrjareptubsqfznqlpa.supabase.co/storage/v1/object/public/landify-bucket/uploads/1754927317559_Edinburgh-Property-management.jpg",
-//       altText: "Edinburgh-Property-management.jpg",
-//       position: 1,
-//       createdAt: "2025-08-11T15:48:39.038Z",
-//     },
-//     {
-//       id: 20,
-//       listingId: 7,
-//       url: "https://bfrjareptubsqfznqlpa.supabase.co/storage/v1/object/public/landify-bucket/uploads/1754927317988_istockphoto-1396856251-612x612.jpg",
-//       altText: "istockphoto-1396856251-612x612.jpg",
-//       position: 2,
-//       createdAt: "2025-08-11T15:48:39.038Z",
-//     },
-//     {
-//       id: 21,
-//       listingId: 7,
-//       url: "https://bfrjareptubsqfznqlpa.supabase.co/storage/v1/object/public/landify-bucket/uploads/1754927318232_istockphoto-2155879454-612x612.jpg",
-//       altText: "istockphoto-2155879454-612x612.jpg",
-//       position: 3,
-//       createdAt: "2025-08-11T15:48:39.038Z",
-//     },
-//     {
-//       id: 22,
-//       listingId: 7,
-//       url: "https://bfrjareptubsqfznqlpa.supabase.co/storage/v1/object/public/landify-bucket/uploads/1754927318417_pexels-binyaminmellish-186077.jpg",
-//       altText: "pexels-binyaminmellish-186077.jpg",
-//       position: 4,
-//       createdAt: "2025-08-11T15:48:39.038Z",
-//     },
-//   ],
-// };
+interface PropertyFormData {
+  id: number;
+  title: string;
+  description: string;
+  address: string;
+  priceCents: number;
+  propertyType: "HOUSE" | "APARTMENT" | "COMMERCIAL";
+  status: "FOR_SALE" | "FOR_RENT";
+  images?: Array<{
+    id: number;
+    listingId: number;
+    url: string;
+    altText: string;
+    position: number;
+    createdAt: string;
+  }>;
+}
 
 export default function PropertyListingEditPage() {
+  const [initialData, setInitialData] = useState<PropertyFormData | null>(null); // ✅ fixed destructuring
   const { listingId } = useParams();
-  const id = parseInt(listingId as string);
-  const { data, isSuccess, isLoading, refetch } = useGetListingOne({ id });
+  const id = parseInt(listingId as string, 10);
+
+  const { data, isSuccess, isLoading, refetch, isRefetching } =
+    useGetListingOne({ id });
+
+  useEffect(() => {
+    if (!isRefetching && isSuccess && data) {
+      setInitialData(data.data); // ✅ assuming your API returns { data: listing }
+    }
+  }, [isRefetching, isSuccess, data]);
 
   return (
     <div className="space-y-6 md:mx-[200px] md:my-[100px]">
-      {isLoading && <LoadingScreen />}
-      {isSuccess && (
-        <PropertyListingForm initialData={data?.data} refetch={refetch} />
-      )}
+      {(isLoading || isRefetching) && <LoadingScreen />}
 
-      {data?.data && (
+      {initialData && <PropertyListingForm initialData={initialData} />}
+
+      {initialData?.images && (
         <ImageEditForm
-          existingImages={data?.data.images}
-          propertyId={data?.data?.id}
+          existingImages={initialData.images}
+          propertyId={initialData.id}
+          refetch={refetch}
         />
       )}
     </div>

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { X, Upload, ImageIcon, Trash2 } from "lucide-react";
-import { useUploadImages } from "@/services/imageServices";
+import { useRemoveImages, useUploadImages } from "@/services/imageServices";
 import { showToast } from "@/utils/toast-utils";
 
 interface UploadedImage {
@@ -42,6 +42,20 @@ export function ImageEditForm({
   const [isDragOver, setIsDragOver] = useState(false);
   const [isDeletingExisting, setIsDeletingExisting] = useState<number | null>(
     null,
+  );
+
+  const removeImagesMutate = useRemoveImages(
+    () => {
+      showToast("success", {
+        message: "Successfully deleted",
+      });
+      refetch();
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
   );
 
   const uploadImagesMutate = useUploadImages(
@@ -153,39 +167,8 @@ export function ImageEditForm({
     });
   };
 
-  const removeExistingImage = async (imageId: number) => {
-    setIsDeletingExisting(imageId);
-
-    try {
-      const response = await fetch(
-        `/api/properties/${propertyId}/images/${imageId}`,
-        {
-          method: "DELETE",
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      setExistingImagesState((prev) =>
-        prev.filter((img) => img.id !== imageId),
-      );
-
-      toast({
-        title: "Success!",
-        description: "Image has been deleted successfully",
-      });
-    } catch (error) {
-      console.error("Delete error:", error);
-      toast({
-        title: "Delete Failed",
-        description: "Failed to delete image. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeletingExisting(null);
-    }
+  const removeExistingImage = async (image: ExistingImage) => {
+    removeImagesMutate.mutate({ images: [image] });
   };
 
   const handleImageUpload = async () => {
@@ -232,9 +215,14 @@ export function ImageEditForm({
       <CardContent className="space-y-6">
         {existingImagesState.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">
-              Current Images ({existingImagesState.length})
-            </h3>
+            <div className="flex justify-between gap-6">
+              <h3 className="text-lg font-medium">
+                Current Images ({existingImagesState.length})
+              </h3>
+              <Button className="cursor-pointer" onClick={refetch}>
+                Refresh
+              </Button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {existingImagesState.map((image) => (
                 <div key={image.id} className="relative group">
@@ -248,9 +236,9 @@ export function ImageEditForm({
 
                   <button
                     type="button"
-                    onClick={() => removeExistingImage(image.id)}
+                    onClick={() => removeExistingImage(image)}
                     disabled={isDeletingExisting === image.id}
-                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50"
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 disabled:opacity-50 cursor-pointer"
                   >
                     {isDeletingExisting === image.id ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />

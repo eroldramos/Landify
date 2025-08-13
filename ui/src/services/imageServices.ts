@@ -23,3 +23,17 @@ export const useUploadImages = (
     onError: onError,
   });
 };
+
+export const useRemoveImages = (onSuccess: OnSuccess, onError: OnError) => {
+  return useMutation({
+    mutationFn: (formData) => {
+      return request({
+        url: `/api/image/remove_images`,
+        method: "delete",
+        data: formData,
+      });
+    },
+    onSuccess: onSuccess,
+    onError: onError,
+  });
+};
