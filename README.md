@@ -45,8 +45,9 @@ Before running locally, make sure you have:
 Landify/
 │
 ├── api/        # Backend API service
+|    ├──        package.json
 ├── ui/         # Frontend React app
-├── package.json  # Monorepo root config
+|    ├──        package.json
 └── README.md
 ```
 
@@ -140,11 +141,13 @@ Frontend will be running at **http://localhost:5173**
 
 ## 🧪 Useful Commands
 
-| Command                   | Description                     |
-| ------------------------- | ------------------------------- |
-| `npm install`             | Install all dependencies (root) |
-| `npm run dev` (per app)   | Start dev server                |
-| `npm run build` (per app) | Build project                   |
+| Command                                 | Description                     |
+| --------------------------------------- | ------------------------------- |
+| `npm install`                           | Install all dependencies (root) |
+| `npm run dev` (per app)                 | Start dev server                |
+| `npm run build` (per app)               | Build project                   |
+| `npx prisma migrate dev` (backend only) | Mirgation to DB                 |
+| `npx prisma generate` (backend only)    | Create prisma client locally    |
 
 ---
 
