@@ -28,10 +28,12 @@ export const useGetListings = ({
       const filters = [`page=${page}`, `search=${search}`, `limit=${limit}`];
 
       if (status) {
-        filters.push(`status=${status}`);
+        filters.push(`status=${status === "ALL" ? "" : status}`);
       }
       if (propertyType) {
-        filters.push(`propertyType=${propertyType}`);
+        filters.push(
+          `propertyType=${propertyType === "ALL" ? "" : propertyType}`,
+        );
       }
 
       if (minPrice > 0) {
