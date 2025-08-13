@@ -99,6 +99,7 @@ class ListingService {
     total: number;
     page: number;
     limit: number;
+    totalPages: number;
   }> => {
     const skip = (page - 1) * limit;
 
@@ -153,8 +154,8 @@ class ListingService {
       }),
       prisma.listing.count({ where }),
     ]);
-
-    return { data, total, page, limit };
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    return { data, total, page, limit, totalPages };
   };
 
   /**

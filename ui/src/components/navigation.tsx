@@ -7,14 +7,28 @@ import { useAppStore, useAuthStore } from "@/store/appStore";
 import { getInitials } from "@/utils/string-utils";
 import type { MenuItem } from "@/types/schema";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { showToast } from "@/utils/toast-utils";
 import Swal from "sweetalert2";
+import { debounce } from "lodash";
+
 export function Navigation() {
   const { auth, setAuth } = useAuthStore();
-
   const { search, setSearch } = useAppStore();
   const navigate = useNavigate();
+
+  // Debounced version of setSearch
+  const debouncedSetSearch = useMemo(
+    () => debounce((value: string) => setSearch(value), 300),
+    [setSearch],
+  );
+
+  // Cancel pending debounce when component unmounts
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
 
   const menuItemsForRegular: MenuItem[] = [
     {
@@ -66,6 +80,7 @@ export function Navigation() {
       },
     },
   ];
+
   const menuItemsForAdmin: MenuItem[] = [
     {
       path: "List Property",
@@ -122,26 +137,24 @@ export function Navigation() {
       },
     },
   ];
+
   const pathname = window.location.pathname;
   useEffect(() => {
     if (auth?.expireAt) {
-      const expiryDate = new Date(auth?.expireAt * 1000); // convert to ms
-
+      const expiryDate = new Date(auth?.expireAt * 1000);
       const now = new Date();
-      console.log(now, expiryDate);
       if (now > expiryDate) {
         showToast("info", { message: "You have been logged out" });
         setAuth(null);
       }
     }
-    console.log(pathname);
   }, [auth?.expireAt, setAuth, pathname]);
 
   return (
     <nav className="bg-white border-b sticky top-0 z-20 shadow-sm">
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo/Brand */}
+          {/* Logo */}
           <div
             className="flex items-center space-x-3 cursor-pointer"
             onClick={() => navigate("/")}
@@ -150,21 +163,20 @@ export function Navigation() {
             <h1 className="text-xl font-bold text-gray-900">Landify</h1>
           </div>
 
-          {/* Search Bar - Hidden on mobile */}
+          {/* Search Bar */}
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="Search properties..."
                 className="pl-10 w-full"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                defaultValue={search}
+                onChange={(e) => debouncedSetSearch(e.target.value)}
               />
             </div>
           </div>
 
           {/* Login button */}
-
           {!auth?.accessToken && (
             <Button size={"lg"} onClick={() => navigate("/auth")}>
               Login
@@ -208,6 +220,8 @@ export function Navigation() {
             <Input
               placeholder="Search properties..."
               className="pl-10 w-full"
+              defaultValue={search}
+              onChange={(e) => debouncedSetSearch(e.target.value)}
             />
           </div>
         </div>

@@ -1,10 +1,18 @@
-import type { AuthStore } from "@/types/schema";
+import type { AuthStore, ListingStatus, PropertyType } from "@/types/schema";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type AppStore = {
+export type FilterState = {
+  propertyType: PropertyType | "";
+  status: ListingStatus | "";
+  priceRange: number[];
+};
+
+export type AppStore = {
   search: string;
   setSearch: (value: string) => void;
+  filters: FilterState;
+  setFilters: (value: FilterState) => void;
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -23,4 +31,11 @@ export const useAuthStore = create<AuthStore>()(
 export const useAppStore = create<AppStore>((set) => ({
   search: "",
   setSearch: (value) => set({ search: value }),
+
+  filters: {
+    propertyType: "",
+    status: "",
+    priceRange: [0, 50],
+  },
+  setFilters: (value) => set({ filters: value }),
 }));

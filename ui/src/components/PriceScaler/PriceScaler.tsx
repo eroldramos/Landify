@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Slider } from "@/components/ui/slider";
 
@@ -25,22 +23,28 @@ export function PriceScaler({
     defaultMaxValue,
   ]);
 
+  // Debounced effect
   useEffect(() => {
-    onValueChange(values);
-  }, [values, onValueChange]);
+    const handler = setTimeout(() => {
+      if (values[0] !== min || values[1] !== max) {
+        onValueChange(values);
+      }
+    }, 300); // adjust delay as needed
+
+    return () => clearTimeout(handler); // cancel if user moves slider again
+  }, [values, min, max, onValueChange]);
 
   const handleValueChange = (newValues: number[]) => {
     setValues([newValues[0], newValues[1]]);
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
-  };
 
   return (
     <div className="space-y-3">

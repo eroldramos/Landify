@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGetListingOne } from "@/services/listingServices";
 import { useAuthStore } from "@/store/appStore";
+import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 
 // Mock data
 // const propertyData = {
@@ -72,7 +73,7 @@ export default function PropertyListingSinglePage() {
   const { auth } = useAuthStore();
   const { listingId } = useParams();
   const id = parseInt(listingId as string);
-  const { data: propertyData, isSuccess } = useGetListingOne({ id });
+  const { data: propertyData, isSuccess, isLoading } = useGetListingOne({ id });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -133,6 +134,7 @@ export default function PropertyListingSinglePage() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {isLoading && <LoadingScreen />}
         {/* Header */}
         {propertyData?.data && (
           <>

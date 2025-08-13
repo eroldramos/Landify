@@ -8,8 +8,7 @@ export const useGetListings = ({
   status = "",
   propertyType = "",
   search = "",
-  minPrice = 0,
-  maxPrice = 100000,
+  priceRange = [0, 100000],
 }) => {
   return useQuery({
     queryKey: [
@@ -19,8 +18,7 @@ export const useGetListings = ({
       status,
       limit,
       propertyType,
-      minPrice,
-      maxPrice,
+      priceRange,
     ],
     queryFn: () => {
       let url = `/api/listing/get?`;
@@ -36,12 +34,12 @@ export const useGetListings = ({
         );
       }
 
-      if (minPrice > 0) {
-        filters.push(`minPrice=${minPrice}`);
+      if (priceRange[0] != 0 && priceRange[0] >= priceRange[1]) {
+        filters.push(`minPrice=${priceRange[0]}`);
       }
 
-      if (maxPrice < 250000) {
-        filters.push(`maxPrice=${maxPrice}`);
+      if (priceRange[1] != 0 && priceRange[1] <= priceRange[0]) {
+        filters.push(`maxPrice=${priceRange[1]}`);
       }
 
       url += filters.join("&");

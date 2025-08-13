@@ -10,50 +10,41 @@ import {
 } from "@/components/ui/select";
 import type { PropertyType, ListingStatus } from "../types/schema";
 import { PriceScaler } from "./PriceScaler/PriceScaler";
+import { useAppStore } from "@/store/appStore";
 
-interface FiltersProps {
-  onFilterChange: (filters: FilterState) => void;
-  activeFilters: FilterState;
-}
-
-export interface FilterState {
-  propertyType: PropertyType | "";
-  status: ListingStatus | "";
-  priceRange: string;
-}
-
-export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
+export function Filters() {
+  const { filters, setFilters } = useAppStore();
   const handlePropertyTypeChange = (value: string) => {
-    onFilterChange({
-      ...activeFilters,
+    setFilters({
+      ...filters,
       propertyType: value as PropertyType | "",
     });
   };
 
   const handleStatusChange = (value: string) => {
-    onFilterChange({
-      ...activeFilters,
+    setFilters({
+      ...filters,
       status: value as ListingStatus | "",
     });
   };
 
-  const handlePriceRangeChange = (value: string) => {
-    onFilterChange({
-      ...activeFilters,
+  const handlePriceRangeChange = (value: number[]) => {
+    setFilters({
+      ...filters,
       priceRange: value,
     });
   };
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (activeFilters.propertyType !== "") count++;
-    if (activeFilters.status !== "") count++;
-    if (activeFilters.priceRange !== "") count++;
+    if (filters.propertyType !== "") count++;
+    if (filters.status !== "") count++;
+    if (filters.priceRange[0] !== 0) count++;
     return count;
   };
 
   return (
-    <div className="bg-white border-b p-4">
+    <div className="bg-white border-b p-4 ">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <Filter className="h-4 w-4 text-gray-600" />
@@ -72,7 +63,7 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Property Type Filter */}
         <Select
-          value={activeFilters.propertyType}
+          value={filters.propertyType}
           onValueChange={handlePropertyTypeChange}
         >
           <SelectTrigger>
@@ -87,7 +78,7 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
         </Select>
 
         {/* Status Filter */}
-        <Select value={activeFilters.status} onValueChange={handleStatusChange}>
+        <Select value={filters.status} onValueChange={handleStatusChange}>
           <SelectTrigger>
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -102,11 +93,11 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
 
         <PriceScaler
           min={50}
-          max={2000}
+          max={1000000}
           step={25}
-          defaultMinValue={200}
-          defaultMaxValue={800}
-          onValueChange={(values) => console.log("Custom range:", values)}
+          defaultMinValue={0}
+          defaultMaxValue={1000000}
+          onValueChange={(values) => handlePriceRangeChange(values)}
         />
       </div>
     </div>
