@@ -130,6 +130,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
 
+setupSwagger(app, ROOT_FOLDER);
+
 // ------------------ ROUTES ------------------
 app.use("/api", AuthRouter);
 app.use("/api", SupabaseRouter);
@@ -142,8 +144,6 @@ app.get("/", (req, res) => {
     message: "Welcome to Landify",
   });
 });
-
-setupSwagger(app);
 
 // ------------------ GLOBAL ERROR HANDLER ------------------
 app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {

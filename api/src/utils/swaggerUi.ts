@@ -27,16 +27,16 @@ const swaggerDefinition = {
   },
 };
 
-const options: swaggerJSDoc.Options = {
-  swaggerDefinition,
-  apis: ["./src/routes/*.ts"], // Files containing annotations
-};
+export function setupSwagger(app: Express, ROOT_FOLDER: string): void {
+  const options: swaggerJSDoc.Options = {
+    swaggerDefinition,
+    apis: ["./src/routes/*.ts"], // Files containing annotations
+  };
 
-const swaggerSpec = swaggerJSDoc(options);
-const options2 = {
-  customCssUrl: "/public/swagger-ui.css",
-  customSiteTitle: "Landify Offical Swagger UI",
-};
-export function setupSwagger(app: Express): void {
+  const swaggerSpec = swaggerJSDoc(options);
+  const options2 = {
+    customCssUrl: "/public/swagger-ui.css",
+    customSiteTitle: "Landify Official Swagger UI",
+  };
   app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, options2));
 }

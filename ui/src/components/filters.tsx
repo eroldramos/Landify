@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { PropertyType, ListingStatus } from "../types/schema";
+import { PriceScaler } from "./PriceScaler/PriceScaler";
 
 interface FiltersProps {
   onFilterChange: (filters: FilterState) => void;
@@ -114,6 +115,15 @@ export function Filters({ onFilterChange, activeFilters }: FiltersProps) {
             <SelectItem value="500000+">$5,000+</SelectItem>
           </SelectContent>
         </Select>
+
+        <PriceScaler
+          min={50}
+          max={2000}
+          step={25}
+          defaultMinValue={200}
+          defaultMaxValue={800}
+          onValueChange={(values) => console.log("Custom range:", values)}
+        />
       </div>
     </div>
   );
