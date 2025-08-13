@@ -12,11 +12,18 @@ import ListingRouter from "./routes/listingRoutes";
 import FavoriteRouter from "./routes/favoriteRoutes";
 import ImageRouter from "./routes/imageRoutes";
 import { setupSwagger } from "./utils/swaggerUi";
+import path from "path";
+
 // import { logger } from "./utils/logger";
 dotenv.config();
 
 const app = express();
 
+const ROOT_FOLDER = path.join(__dirname, "..");
+const PUBLIC_FOLDER = path.join(ROOT_FOLDER, "public");
+app.use("/public", express.static(PUBLIC_FOLDER));
+
+console.log(PUBLIC_FOLDER);
 // ------------------ ENV CONFIG ------------------
 const ALLOWED_ORIGINS: string[] = process.env.ALLOWED_ORIGINS?.split(",").map(
   (o) => o.trim(),
@@ -121,7 +128,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // ------------------ BODY PARSING ------------------
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static("public"));
 app.use(express.json());
 
 // ------------------ ROUTES ------------------
