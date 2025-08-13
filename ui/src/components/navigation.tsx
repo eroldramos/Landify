@@ -7,7 +7,7 @@ import { useAppStore, useAuthStore } from "@/store/appStore";
 import { getInitials } from "@/utils/string-utils";
 import type { MenuItem } from "@/types/schema";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { showToast } from "@/utils/toast-utils";
 import Swal from "sweetalert2";
 import { debounce } from "lodash";
@@ -17,18 +17,26 @@ export function Navigation() {
   const { search, setSearch } = useAppStore();
   const navigate = useNavigate();
 
-  // Debounced version of setSearch
+  // Local state for instant typing
+  const [localSearch, setLocalSearch] = useState(search);
+
+  // Debounce only the Zustand update
   const debouncedSetSearch = useMemo(
     () => debounce((value: string) => setSearch(value), 300),
     [setSearch],
   );
 
-  // Cancel pending debounce when component unmounts
+  // Cancel pending debounce on unmount
   useEffect(() => {
     return () => {
       debouncedSetSearch.cancel();
     };
   }, [debouncedSetSearch]);
+
+  // Sync local state if search changes from outside
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
 
   const menuItemsForRegular: MenuItem[] = [
     {
@@ -88,54 +96,7 @@ export function Navigation() {
         navigate("/admin/list_property");
       },
     },
-    {
-      path: "Log Out",
-      onClick: () => {
-        Swal.fire({
-          title: "Are you sure you want to logout?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "black",
-          cancelButtonColor: "gray",
-          confirmButtonText: "Yes",
-          cancelButtonText: "No",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            let timerInterval: number;
-
-            Swal.fire({
-              title: "Logging out",
-              html: "You will be logged out in <b></b> milliseconds.",
-              timer: 2000,
-              timerProgressBar: true,
-              didOpen: () => {
-                Swal.showLoading();
-                const popup = Swal.getPopup();
-                if (popup) {
-                  const timer = popup.querySelector("b");
-                  if (timer) {
-                    timerInterval = window.setInterval(() => {
-                      const timeLeft = Swal.getTimerLeft();
-                      if (timeLeft !== null) {
-                        timer.textContent = `${timeLeft}`;
-                      }
-                    }, 100);
-                  }
-                }
-              },
-              willClose: () => {
-                clearInterval(timerInterval);
-              },
-            }).then((result) => {
-              if (result.dismiss === Swal.DismissReason.timer) {
-                setAuth(null);
-                showToast("info", { message: "You have been logged out." });
-              }
-            });
-          }
-        });
-      },
-    },
+    ...menuItemsForRegular,
   ];
 
   const pathname = window.location.pathname;
@@ -170,8 +131,12 @@ export function Navigation() {
               <Input
                 placeholder="Search properties..."
                 className="pl-10 w-full"
-                defaultValue={search}
-                onChange={(e) => debouncedSetSearch(e.target.value)}
+                value={localSearch}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setLocalSearch(value); // update instantly
+                  debouncedSetSearch(value); // update store after delay
+                }}
               />
             </div>
           </div>
@@ -220,8 +185,12 @@ export function Navigation() {
             <Input
               placeholder="Search properties..."
               className="pl-10 w-full"
-              defaultValue={search}
-              onChange={(e) => debouncedSetSearch(e.target.value)}
+              value={localSearch}
+              onChange={(e) => {
+                const value = e.target.value;
+                setLocalSearch(value);
+                debouncedSetSearch(value);
+              }}
             />
           </div>
         </div>
