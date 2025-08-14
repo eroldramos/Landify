@@ -7279,7 +7279,6 @@
   font-size: 16px;
   font-weight: 600;
   padding: 0 10px;
-  word-break: break-word;
 }
 @media (max-width: 768px) {
   .swagger-ui .opblock .opblock-summary-operation-id,
@@ -7303,7 +7302,6 @@
   flex: 1 1 auto;
   font-family: sans-serif;
   font-size: 13px;
-  word-break: break-word;
 }
 .swagger-ui .opblock .opblock-summary {
   align-items: center;
@@ -7609,8 +7607,6 @@
   margin: 0;
   padding: 10px;
   white-space: pre-wrap;
-  word-break: break-all;
-  word-break: break-word;
 }
 .swagger-ui .opblock-body pre.microlight .headerline {
   display: block;
@@ -7625,7 +7621,6 @@
 }
 .swagger-ui .highlight-code > .microlight code {
   white-space: pre-wrap !important;
-  word-break: break-all;
 }
 .swagger-ui .curl-command {
   position: relative;
@@ -8894,8 +8889,6 @@
 .swagger-ui .renderedMarkdown p,
 .swagger-ui .renderedMarkdown pre {
   margin: 1em auto;
-  word-break: break-all;
-  word-break: break-word;
 }
 .swagger-ui .markdown pre,
 .swagger-ui .renderedMarkdown pre {
@@ -8919,10 +8912,9 @@
 .swagger-ui .renderedMarkdown pre > code {
   display: block;
 }
-/* Remove Swagger's forced wrapping on endpoint paths */
+/* Keep paths inline but wrap gracefully if too long */
 .swagger-ui .opblock-summary-path,
 .swagger-ui .opblock-summary-path__deprecated {
-  all: unset;
-  font-family: monospace; /* optional - keep code look */
-  font-size: 14px; /* optional */
+  white-space: pre !important;
+  display: inline-block !important;
 }
