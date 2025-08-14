@@ -8919,3 +8919,10 @@
 .swagger-ui .renderedMarkdown pre > code {
   display: block;
 }
+/* Fix Swagger UI vertical endpoint paths */
+.swagger-ui .opblock-summary-path,
+.swagger-ui .opblock-summary-path__deprecated {
+  white-space: normal !important;
+  word-break: keep-all !important;
+  display: inline-block !important;
+}
