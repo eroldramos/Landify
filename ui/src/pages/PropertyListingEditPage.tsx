@@ -32,10 +32,10 @@ export default function PropertyListingEditPage() {
     useGetListingOne({ id });
 
   useEffect(() => {
-    if (!isRefetching && isSuccess && data) {
+    if (isSuccess && data) {
       setInitialData(data.data);
     }
-  }, [isRefetching, isSuccess, data]);
+  }, [isSuccess, data]);
 
   return (
     <div className="space-y-6 md:mx-[200px] md:my-[100px]">

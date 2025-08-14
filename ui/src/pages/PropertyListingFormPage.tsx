@@ -1,5 +1,3 @@
-"use client";
-
 import type React from "react";
 
 import { useState } from "react";
@@ -15,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { ImageUpload } from "@/components/ImageUpload";
 import type { ListingStatus, PropertyType } from "@/types/schema";
 import { useListProperty } from "@/services/listingServices";
@@ -41,9 +38,8 @@ const initialData: PropertyFormData = {
 
 export function PropertyListingFormPage() {
   const [formData, setFormData] = useState(initialData);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFormSaved, setIsFormSaved] = useState(false);
-  const [listingId, setListingId] = useState(null);
+  const [listingId, setListingId] = useState<number | null>(null);
 
   const listProperty = useListProperty(
     (data) => {
@@ -52,7 +48,7 @@ export function PropertyListingFormPage() {
       });
 
       setIsFormSaved(true);
-      setListingId(data?.data?.id);
+      setListingId(data?.data?.id as number);
     },
     (error) => {
       showToast("error", {
@@ -60,7 +56,6 @@ export function PropertyListingFormPage() {
       });
     },
   );
-  const { toast } = useToast();
 
   const handleInputChange = (
     field: keyof PropertyFormData,
@@ -84,51 +79,8 @@ export function PropertyListingFormPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-
-    // Validate required fields
-    if (!formData.title.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Property title is required",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.description.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Property description is required",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.address.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Property address is required",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.priceCents <= 0) {
-      toast({
-        title: "Validation Error",
-        description: "Property price must be greater than $0",
-        variant: "destructive",
-      });
-      setIsSubmitting(false);
-      return;
-    }
 
     listProperty.mutate(formData);
-    console.log(formData);
   };
 
   return (
@@ -280,7 +232,7 @@ export function PropertyListingFormPage() {
         </CardContent>
       </Card>
 
-      {isFormSaved && <ImageUpload listingId={listingId as number} />}
+      {isFormSaved && <ImageUpload listingId={listingId!} />}
     </div>
   );
 }

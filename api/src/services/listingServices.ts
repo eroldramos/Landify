@@ -130,6 +130,7 @@ class ListingService {
           }
         : {}),
     };
+    // Can be use also with promise.all for parallel exec
 
     const [data, total] = await prisma.$transaction([
       prisma.listing.findMany({

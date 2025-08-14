@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,12 +35,17 @@ interface PropertyListingFormProps {
 export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
   const [formData, setFormData] = useState<PropertyFormData>(initialData);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData, setFormData]);
+
   const updatePropertyMutate = useUpdateProperty(
     () => {
       showToast("success", {
         message: "Property details updated",
       });
-      invalidateQuery(["useGetListingOne", String(formData.id)]);
+      invalidateQuery("useGetListingOne");
     },
 
     (error) => {

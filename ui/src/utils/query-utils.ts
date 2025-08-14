@@ -10,8 +10,11 @@ export const queryClient = new QueryClient({
     },
   },
 });
-export const invalidateQuery = (queryKey: string | string[]) => {
+export const invalidateQuery = (
+  queryKey: string | number | (string | number)[],
+) => {
   queryClient.invalidateQueries({
-    queryKey: typeof queryKey === "string" ? [queryKey] : [...queryKey],
+    queryKey: Array.isArray(queryKey) ? [...queryKey] : [queryKey],
+    exact: false,
   });
 };

@@ -12,6 +12,7 @@ router.post(
 
 router.delete(
   "/favorite/delete",
+
   SupabaseMiddleware.authenticateAsAdmin,
   FavoriteController.removeManyFavorites,
 );
@@ -22,6 +23,10 @@ router.delete(
   FavoriteController.removeFavorite,
 );
 
-router.get("/favorite/get", FavoriteController.getFavoritesByUser);
+router.get(
+  "/favorite/get",
+  SupabaseMiddleware.authenticate,
+  FavoriteController.getFavoritesByUser,
+);
 
 export default router;

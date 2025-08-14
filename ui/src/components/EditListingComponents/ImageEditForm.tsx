@@ -1,6 +1,6 @@
 import type React from "react";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
@@ -43,6 +43,10 @@ export function ImageEditForm({
   const [isDeletingExisting, setIsDeletingExisting] = useState<number | null>(
     null,
   );
+
+  useEffect(() => {
+    setExistingImagesState(existingImages);
+  }, [existingImages]);
 
   const removeImagesMutate = useRemoveImages(
     () => {

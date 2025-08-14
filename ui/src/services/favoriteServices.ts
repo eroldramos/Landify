@@ -66,7 +66,7 @@ export const useGetListingOne = ({ id = 0 }) => {
 
 export const useListProperty = (onSuccess: OnSuccess, onError: OnError) => {
   return useMutation({
-    mutationFn: (formData: unknown) => {
+    mutationFn: (formData) => {
       return request({
         url: `/api/listing/create`,
         method: "post",
