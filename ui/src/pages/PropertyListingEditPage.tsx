@@ -33,7 +33,7 @@ export default function PropertyListingEditPage() {
 
   useEffect(() => {
     if (!isRefetching && isSuccess && data) {
-      setInitialData(data.data); // ✅ assuming your API returns { data: listing }
+      setInitialData(data.data);
     }
   }, [isRefetching, isSuccess, data]);
 
