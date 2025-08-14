@@ -8919,10 +8919,10 @@
 .swagger-ui .renderedMarkdown pre > code {
   display: block;
 }
-/* Keep paths inline but wrap gracefully if too long */
+/* Remove Swagger's forced wrapping on endpoint paths */
 .swagger-ui .opblock-summary-path,
 .swagger-ui .opblock-summary-path__deprecated {
-  white-space: pre !important;
-  word-break: break-word !important;
-  display: inline-block !important;
+  all: unset;
+  font-family: monospace; /* optional - keep code look */
+  font-size: 14px; /* optional */
 }
