@@ -35,13 +35,18 @@ export default function PropertyListingEditPage() {
     if (isSuccess && data) {
       setInitialData(data.data);
     }
-  }, [isSuccess, data]);
+    if (isLoading || isRefetching) {
+      setInitialData(null);
+    }
+  }, [isSuccess, data, isLoading, isRefetching]);
 
   return (
     <div className="space-y-6 md:mx-[200px] md:my-[100px]">
       {(isLoading || isRefetching) && <LoadingScreen />}
 
-      {initialData && <PropertyListingForm initialData={initialData} />}
+      {initialData && !isLoading && (
+        <PropertyListingForm initialData={initialData} />
+      )}
 
       {initialData?.images && (
         <ImageEditForm
