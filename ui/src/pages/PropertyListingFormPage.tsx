@@ -158,9 +158,13 @@ export function PropertyListingFormPage() {
                   type="text"
                   placeholder="0.00"
                   value={formData.priceCents}
-                  onChange={(e) =>
-                    handleInputChange("priceCents", parseInt(e.target.value))
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    handleInputChange(
+                      "priceCents",
+                      val === "" ? 0 : parseInt(val, 10) || 0,
+                    );
+                  }}
                   required
                   className="w-full pl-8"
                 />
