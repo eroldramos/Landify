@@ -221,7 +221,7 @@ export function ImageUpload({ listingId }: ImageUploadProps) {
               <Button
                 type="button"
                 onClick={handleUpload}
-                disabled={uploadImagesMutate?.isSuccess}
+                disabled={uploadImagesMutate?.isPending}
                 className="min-w-[120px]"
               >
                 {uploadImagesMutate?.isPending
