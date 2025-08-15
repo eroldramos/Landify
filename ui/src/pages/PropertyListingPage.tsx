@@ -20,7 +20,6 @@ import { useNavigate } from "react-router-dom";
 // }
 
 export default function PropertyListingPage() {
-  const { filters, search, setSearch, setFilters } = useAppStore();
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
@@ -33,6 +32,7 @@ export default function PropertyListingPage() {
     { length: endIndex - startIndex },
     (_, i) => `Item ${startIndex + i + 1}`,
   );
+  const { filters, search, setSearch, setFilters } = useAppStore();
 
   const { data, isLoading, isSuccess } = useGetListings({
     ...filters,

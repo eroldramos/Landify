@@ -4,7 +4,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+type MenuItem = {
+  path: string;
+  onClick: () => void;
+};
+type PopoverMenuProps = {
+  menuItems: MenuItem[];
+  icon?: React.ReactNode;
+  className?: string;
+};
 const PopoverMenu: React.FC<PopoverMenuProps> = ({
   menuItems,
   icon,
@@ -26,7 +34,7 @@ const PopoverMenu: React.FC<PopoverMenuProps> = ({
           {menuItems?.map((menu, i) => (
             <Button
               variant="ghost"
-              className="w-full justify-start"
+              className="w-full justify-start cursor-pointer"
               key={i}
               onClick={() => menu.onClick()}
             >

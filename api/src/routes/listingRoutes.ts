@@ -57,7 +57,7 @@ router.delete(
 
 router.get(
   "/listing/get",
-
+  SupabaseMiddleware.anonymousAuthenticate,
   ListingController.getListings,
 );
 

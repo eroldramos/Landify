@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import type { Listing } from "../types/schema";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/appStore";
+import { useAddFavorite, useRemoveFavorite } from "@/services/favoriteServices";
+import { showToast } from "@/utils/toast-utils";
+import { invalidateQuery } from "@/utils/query-utils";
 
 interface PropertyCardProps {
   listing: Listing;
@@ -28,12 +31,54 @@ export function PropertyCard({ listing }: PropertyCardProps) {
   const { auth } = useAuthStore();
 
   const navigate = useNavigate();
-  const isFavorited = listing.favorites.some(
+  const isFavorited = listing?.favorites?.some(
     (item) => item?.userId === auth?.id,
   );
   console.log(isFavorited);
   const primaryImage =
     listing.images.find((img) => img.position === 1) || listing.images[0];
+
+  const addFavoriteMutate = useAddFavorite(
+    () => {
+      showToast("success", {
+        message: "Marked as favorite",
+      });
+      invalidateQuery(["useGetListings"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    listing?.id,
+  );
+
+  const removeFavoriteMutate = useRemoveFavorite(
+    () => {
+      showToast("success", {
+        message: "Unmarked as favorite",
+      });
+      invalidateQuery(["useGetListings"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    listing?.id,
+  );
+
+  const toggleFavorite = () => {
+    if (!auth?.accessToken) {
+      showToast("warning", { message: "Please login to mark as favorite" });
+    }
+    if (auth?.accessToken && isFavorited) {
+      removeFavoriteMutate.mutate();
+    }
+    if (auth?.accessToken && !isFavorited) {
+      addFavoriteMutate.mutate();
+    }
+  };
 
   return (
     <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow">
@@ -59,7 +104,7 @@ export function PropertyCard({ listing }: PropertyCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-white/80 hover:bg-white"
+                className="bg-white/80 hover:bg-white cursor-pointer"
                 onClick={() =>
                   navigate(`/admin/list_property/edit/${listing.id}`)
                 }
@@ -70,7 +115,8 @@ export function PropertyCard({ listing }: PropertyCardProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="bg-white/80 hover:bg-white"
+              className="bg-white/80 hover:bg-white cursor-pointer"
+              onClick={toggleFavorite}
             >
               <Heart
                 className={`h-4 w-4 ${
@@ -141,7 +187,7 @@ export function PropertyCard({ listing }: PropertyCardProps) {
 
       <CardFooter className="p-4 pt-0">
         <Button
-          className="w-full"
+          className="w-full cursor-pointer"
           onClick={() => {
             navigate(`/property_listings/${listing.id}`);
           }}

@@ -20,32 +20,50 @@ class FavoriteService {
   };
 
   /**
-   * Get all favorites for a user with pagination.
+   * Get all favorites for a user with pagination + search (title/description/address).
+   * Uses a single transaction so count & data are consistent.
    */
   static getFavoritesByUser = async (
     userId: number,
     page: number = 1,
     limit: number = 10,
+    search: string = "",
   ): Promise<{
     data: Favorite[];
     total: number;
     page: number;
-    limit: number;
     totalPages: number;
   }> => {
     const skip = (page - 1) * limit;
+    const term = search?.trim();
+
+    // Build WHERE condition
+    const whereCondition: any = {
+      userId,
+      ...(term
+        ? {
+            listing: {
+              OR: [
+                { title: { contains: term, mode: "insensitive" } },
+                { description: { contains: term, mode: "insensitive" } },
+                { address: { contains: term, mode: "insensitive" } },
+              ],
+            },
+          }
+        : {}),
+    };
 
     const [data, total] = await prisma.$transaction([
       prisma.favorite.findMany({
-        where: { userId },
+        where: whereCondition,
         include: {
           user: {
             select: {
               id: true,
               name: true,
               email: true,
-              // show only fields need to be return and included
-              // can't take password: false
+              role: true,
+              // password excluded
             },
           },
           listing: {
@@ -58,16 +76,13 @@ class FavoriteService {
         skip,
         take: limit,
       }),
-      prisma.favorite.count({
-        where: { userId },
-      }),
+      prisma.favorite.count({ where: whereCondition }),
     ]);
 
     return {
       data,
       total,
       page,
-      limit,
       totalPages: Math.ceil(total / limit),
     };
   };

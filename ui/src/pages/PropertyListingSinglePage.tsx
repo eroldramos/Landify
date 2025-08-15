@@ -20,6 +20,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetListingOne } from "@/services/listingServices";
 import { useAuthStore } from "@/store/appStore";
 import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
+import { showToast } from "@/utils/toast-utils";
+import { useAddFavorite, useRemoveFavorite } from "@/services/favoriteServices";
+import { invalidateQuery } from "@/utils/query-utils";
 
 // Mock data
 // const propertyData = {
@@ -79,9 +82,43 @@ export default function PropertyListingSinglePage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
 
+  const addFavoriteMutate = useAddFavorite(
+    () => {
+      showToast("success", {
+        message: "Marked as favorite",
+      });
+      invalidateQuery(["useGetListingOne"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    parseInt(listingId!),
+  );
+
+  const removeFavoriteMutate = useRemoveFavorite(
+    () => {
+      showToast("success", {
+        message: "Unmarked as favorite",
+      });
+      invalidateQuery(["useGetListingOne"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    parseInt(listingId!),
+  );
+
   useEffect(() => {
     if (isSuccess) {
-      setIsFavorited(propertyData?.data?.favorites?.[0]?.userId === auth?.id);
+      setIsFavorited(
+        propertyData?.data?.favorites?.[0]?.userId === auth?.id &&
+          propertyData?.data?.favorites?.[0]?.userId &&
+          auth?.id,
+      );
     }
   }, [isSuccess, propertyData, auth]);
   // Format price from cents to dollars
@@ -130,7 +167,15 @@ export default function PropertyListingSinglePage() {
   };
 
   const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
+    if (!auth?.accessToken) {
+      showToast("warning", { message: "Please login to mark as favorite" });
+    }
+    if (auth?.accessToken && isFavorited) {
+      removeFavoriteMutate.mutate();
+    }
+    if (auth?.accessToken && !isFavorited) {
+      addFavoriteMutate.mutate();
+    }
   };
 
   return (

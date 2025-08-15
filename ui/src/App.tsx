@@ -15,7 +15,7 @@ import {
 } from "./components/ProtectedRoutes";
 import PropertyListingEditPage from "./pages/PropertyListingEditPage";
 import LoadingScreen from "./components/LoadingScreens/LoadingScreen";
-import FavoritePage from "./pages/FavoritePage";
+import MyFavoritesPage from "./pages/MyFavoritesPage";
 function App() {
   document.title = "Landify";
 
@@ -28,7 +28,9 @@ function App() {
     { path: "/", element: <PropertyListingPage /> },
     { path: "/property_listings", element: <PropertyListingPage /> },
   ];
-  const privateRoutes = [{ path: "/my-favorites", element: <FavoritePage /> }];
+  const privateRoutes = [
+    { path: "/my-favorites", element: <MyFavoritesPage /> },
+  ];
 
   const privateAdminRoutes = [
     {
@@ -69,11 +71,11 @@ function App() {
                 })}
               </Route>
 
-              {/* <Route element={<PrivateRoutes />}>
+              <Route element={<PrivateRoutes />}>
                 {privateRoutes.map((route, index) => {
                   return <Route key={index} {...route} />;
                 })}
-              </Route> */}
+              </Route>
 
               <Route element={<PrivateAdminRoutes />}>
                 {privateAdminRoutes.map((route, index) => {

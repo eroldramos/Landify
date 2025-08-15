@@ -79,7 +79,7 @@ class ListingService {
     sortOrder = "desc",
     search = "",
     priceRange,
-    favoritedByUserId, // 👈 new param
+    favoritedByUserId, // optional
   }: {
     page?: number;
     limit?: number;
@@ -93,9 +93,9 @@ class ListingService {
     sortOrder?: "asc" | "desc";
     search?: string;
     priceRange?: { min?: number; max?: number };
-    favoritedByUserId?: number | undefined; // 👈 optional
+    favoritedByUserId?: number | undefined;
   }): Promise<{
-    data: Listing[];
+    data: (Listing & { isFavorited?: boolean })[];
     total: number;
     page: number;
     limit: number;
@@ -122,22 +122,14 @@ class ListingService {
             },
           }
         : {}),
-      ...(favoritedByUserId !== undefined
-        ? {
-            favorites: {
-              some: { userId: favoritedByUserId },
-            },
-          }
-        : {}),
+      // ❌ Removed favorites filter — we want all listings
     };
-    // Can be use also with promise.all for parallel exec
 
     const [data, total] = await prisma.$transaction([
       prisma.listing.findMany({
         where,
         include: {
           images: true,
-          favorites: true,
           owner: {
             select: {
               id: true,
@@ -148,6 +140,14 @@ class ListingService {
               updatedAt: true,
             },
           },
+          ...(favoritedByUserId
+            ? {
+                favorites: {
+                  where: { userId: favoritedByUserId },
+                  select: { id: true, userId: true },
+                },
+              }
+            : {}),
         },
         orderBy: { [sortBy]: sortOrder },
         skip,
@@ -155,8 +155,19 @@ class ListingService {
       }),
       prisma.listing.count({ where }),
     ]);
+
+    // Transform result: add `isFavorited` flag if user is logged in
+    const listingsWithFlag = data.map((listing) => ({
+      ...listing,
+      isFavorited:
+        favoritedByUserId !== undefined
+          ? listing.favorites && listing.favorites.length > 0
+          : undefined,
+    }));
+
     const totalPages = Math.max(1, Math.ceil(total / limit));
-    return { data, total, page, limit, totalPages };
+
+    return { data: listingsWithFlag, total, page, limit, totalPages };
   };
 
   /**

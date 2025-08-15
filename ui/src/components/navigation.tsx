@@ -40,6 +40,12 @@ export function Navigation() {
 
   const menuItemsForRegular: MenuItem[] = [
     {
+      path: "My Favorites",
+      onClick: () => {
+        navigate("/my-favorites");
+      },
+    },
+    {
       path: "Log Out",
       onClick: () => {
         Swal.fire({

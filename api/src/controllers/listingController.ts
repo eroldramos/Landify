@@ -103,7 +103,7 @@ class ListingController {
     }
   };
 
-  static getListings = async (req: Request, res: Response) => {
+  static getListings = async (req: SupabaseRequest, res: Response) => {
     try {
       const {
         page = "1",
@@ -126,7 +126,7 @@ class ListingController {
         ownerId?: number;
         id?: number;
       } = {};
-
+      const currentUserId = req?.currentUser?.id;
       const priceRange: { min?: number; max?: number } = {};
 
       if (typeof status === "string" && status) {
@@ -153,12 +153,6 @@ class ListingController {
         if (!isNaN(parsed)) priceRange.max = parsed;
       }
 
-      let favoritedFilterId: number | undefined;
-      if (favoritedByUserId && typeof favoritedByUserId === "string") {
-        const parsed = parseInt(favoritedByUserId, 10);
-        if (!isNaN(parsed)) favoritedFilterId = parsed;
-      }
-
       const listings = await ListingService.getListingsByFilter({
         page: parseInt(page as string, 10),
         limit: parseInt(limit as string, 10),
@@ -167,7 +161,7 @@ class ListingController {
         sortOrder: sortOrder === "asc" ? "asc" : "desc",
         search: typeof search === "string" ? search : undefined,
         priceRange,
-        favoritedByUserId: favoritedFilterId, // 👈 pass it here
+        favoritedByUserId: currentUserId, // 👈 pass it here
       });
 
       return res.status(200).json(listings);
@@ -182,7 +176,6 @@ class ListingController {
       const id = req.params.id;
 
       const currentUserId = req?.currentUser?.id;
-      console.log(currentUserId, "======");
 
       const listingFound = await ListingService.getListingById(
         parseInt(id),

@@ -239,10 +239,14 @@ export function FavoritesDashboard({ favorites }: FavoritesDashboardProps) {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button className="flex-1" size="sm">
+                    <Button className="flex-1 cursor-pointer" size="sm">
                       View Details
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="cursor-pointer"
+                    >
                       Contact
                     </Button>
                   </div>

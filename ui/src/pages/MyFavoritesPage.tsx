@@ -1,7 +1,18 @@
-import { Heart, MapPin, Home, Building2, DollarSign } from "lucide-react";
+import { Heart, MapPin, Home, Building2, DollarSign, Edit } from "lucide-react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAppStore } from "@/store/appStore";
+import {
+  useRemoveFavorite,
+  useGetFavorites,
+} from "@/services/favoriteServices";
+import { useEffect, useState } from "react";
+import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
+import { Pagination } from "@/Pagination/Pagination";
+import { useNavigate } from "react-router-dom";
+import { showToast } from "@/utils/toast-utils";
+import { invalidateQuery } from "@/utils/query-utils";
 
 // Mock data type definitions
 interface User {
@@ -55,7 +66,6 @@ const mockFavorites: Favorite[] = [
     user: {
       id: 1,
       email: "ramos.erold05@gmail.com",
-      password: "$2b$10$tdkQpXa52q7ktEkc.wf0kOvfGDqElp3McRRWe0xf3rRLFN5YzExT6",
       name: "Erold Ramos",
       role: "ADMIN",
       createdAt: "2025-08-10T06:28:00.815Z",
@@ -83,7 +93,6 @@ const mockFavorites: Favorite[] = [
     user: {
       id: 1,
       email: "ramos.erold05@gmail.com",
-      password: "$2b$10$tdkQpXa52q7ktEkc.wf0kOvfGDqElp3McRRWe0xf3rRLFN5YzExT6",
       name: "Erold Ramos",
       role: "ADMIN",
       createdAt: "2025-08-10T06:28:00.815Z",
@@ -111,7 +120,6 @@ const mockFavorites: Favorite[] = [
     user: {
       id: 1,
       email: "ramos.erold05@gmail.com",
-      password: "$2b$10$tdkQpXa52q7ktEkc.wf0kOvfGDqElp3McRRWe0xf3rRLFN5YzExT6",
       name: "Erold Ramos",
       role: "ADMIN",
       createdAt: "2025-08-10T06:28:00.815Z",
@@ -204,7 +212,6 @@ const mockFavorites: Favorite[] = [
     user: {
       id: 1,
       email: "ramos.erold05@gmail.com",
-      password: "$2b$10$tdkQpXa52q7ktEkc.wf0kOvfGDqElp3McRRWe0xf3rRLFN5YzExT6",
       name: "Erold Ramos",
       role: "ADMIN",
       createdAt: "2025-08-10T06:28:00.815Z",
@@ -249,7 +256,6 @@ const mockFavorites: Favorite[] = [
     user: {
       id: 1,
       email: "ramos.erold05@gmail.com",
-      password: "$2b$10$tdkQpXa52q7ktEkc.wf0kOvfGDqElp3McRRWe0xf3rRLFN5YzExT6",
       name: "Erold Ramos",
       role: "ADMIN",
       createdAt: "2025-08-10T06:28:00.815Z",
@@ -292,12 +298,28 @@ function getPropertyIcon(type: string) {
 }
 
 function PropertyCard({ favorite }: { favorite: Favorite }) {
+  const removeFavoriteMutate = useRemoveFavorite(
+    () => {
+      showToast("success", {
+        message: "Unmarked as favorite",
+      });
+      invalidateQuery(["useGetFavorites"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    favorite?.listing?.id as number,
+  );
+  const navigate = useNavigate();
   const { listing } = favorite;
 
   if (!listing) {
     return null; // Skip favorites with null listings
   }
 
+  console.log(listing?.id);
   const primaryImage =
     listing.images.find((img) => img.position === 1) || listing.images[0];
   const imageUrl =
@@ -311,13 +333,24 @@ function PropertyCard({ favorite }: { favorite: Favorite }) {
           alt={primaryImage?.altText || listing.title}
           className="w-full h-48 object-cover"
         />
-        <Button
-          size="sm"
-          variant="secondary"
-          className="absolute top-3 right-3 h-8 w-8 p-0 bg-white/90 hover:bg-white"
-        >
-          <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-        </Button>
+        <div className="absolute top-3 right-3 flex gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 w-8 p-0 bg-white/90 hover:bg-white cursor-pointer"
+            onClick={() => navigate(`/admin/list_property/edit/${listing?.id}`)}
+          >
+            <Edit className="h-4 w-4 text-gray-600" />
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 w-8 p-0 bg-white/90 hover:bg-white cursor-pointer"
+            onClick={() => removeFavoriteMutate.mutate()}
+          >
+            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
+          </Button>
+        </div>
         <Badge
           variant={listing.status === "FOR_SALE" ? "default" : "secondary"}
           className="absolute top-3 left-3"
@@ -359,46 +392,77 @@ function PropertyCard({ favorite }: { favorite: Favorite }) {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full">View Details</Button>
+        <Button
+          className="w-full cursor-pointer"
+          onClick={() => navigate(`/property_listings/${listing?.id}`)}
+        >
+          View Details
+        </Button>
       </CardFooter>
     </Card>
   );
 }
 
-export default function FavoritesPage() {
+export default function MyFavoritesPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const { search, setSearch } = useAppStore();
+
+  const { data, isLoading, isSuccess } = useGetFavorites({
+    search,
+    page: currentPage,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setCurrentPage(data?.data?.page);
+    }
+  }, [isSuccess, data]);
+
   // Filter out favorites with null listings
-  const validFavorites = mockFavorites.filter((fav) => fav.listing !== null);
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <Heart className="h-8 w-8 fill-red-500 text-red-500" />
-            <h1 className="text-3xl font-bold">My Favorites</h1>
-          </div>
-          <p className="text-muted-foreground">
-            {validFavorites.length}{" "}
-            {validFavorites.length === 1 ? "property" : "properties"} saved
-          </p>
-        </div>
+      {isLoading && <LoadingScreen />}
 
-        {validFavorites.length === 0 ? (
-          <div className="text-center py-12">
-            <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-xl font-semibold mb-2">No favorites yet</h2>
-            <p className="text-muted-foreground">
-              Start exploring properties and save your favorites here!
-            </p>
+      {data?.data?.data && (
+        <>
+          <div className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <Heart className="h-8 w-8 fill-red-500 text-red-500" />
+                <h1 className="text-3xl font-bold">My Favorites</h1>
+              </div>
+              <p className="text-muted-foreground">
+                {data?.data?.total}{" "}
+                {data?.data?.data?.length === 1 ? "property" : "properties"}{" "}
+                saved
+              </p>
+            </div>{" "}
+            <div className="flex justify-center mb-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={data?.data?.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+            {data?.data?.data?.length === 0 ? (
+              <div className="text-center py-12">
+                <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                <h2 className="text-xl font-semibold mb-2">No favorites yet</h2>
+                <p className="text-muted-foreground">
+                  Start exploring properties and save your favorites here!
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data?.data?.data?.map((favorite: Favorite) => (
+                  <PropertyCard key={favorite.id} favorite={favorite} />
+                ))}
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {validFavorites.map((favorite) => (
-              <PropertyCard key={favorite.id} favorite={favorite} />
-            ))}
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

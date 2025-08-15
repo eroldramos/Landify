@@ -2,7 +2,7 @@ import type { OnError, OnSuccess } from "@/types/schema";
 import request from "@/utils/axios-utils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
-export const useGetListings = ({
+export const useGetFavorites = ({
   page = 1,
   limit = 10,
   status = "",
@@ -12,7 +12,7 @@ export const useGetListings = ({
 }) => {
   return useQuery({
     queryKey: [
-      "useGetListings",
+      "useGetFavorites",
       page,
       search,
       status,
@@ -21,7 +21,7 @@ export const useGetListings = ({
       priceRange,
     ],
     queryFn: () => {
-      let url = `/api/listing/get?`;
+      let url = `/api/favorite/get?`;
 
       const filters = [`page=${page}`, `search=${search}`, `limit=${limit}`];
 
@@ -51,26 +51,17 @@ export const useGetListings = ({
   });
 };
 
-export const useGetListingOne = ({ id = 0 }) => {
-  return useQuery({
-    queryKey: ["useGetListingOne", id],
-    queryFn: () => {
-      const url = `/api/listing/get/${id}`;
-
-      return request({
-        url: url,
-      });
-    },
-  });
-};
-
-export const useListProperty = (onSuccess: OnSuccess, onError: OnError) => {
+export const useRemoveFavorite = (
+  onSuccess: OnSuccess,
+  onError: OnError,
+  id: number,
+) => {
   return useMutation({
-    mutationFn: (formData) => {
+    mutationFn: () => {
       return request({
-        url: `/api/listing/create`,
-        method: "post",
-        data: formData,
+        url: `/api/favorite/delete/${id}`,
+        method: "delete",
+        data: {},
       });
     },
     onSuccess: onSuccess,
@@ -78,17 +69,17 @@ export const useListProperty = (onSuccess: OnSuccess, onError: OnError) => {
   });
 };
 
-export const useUpdateProperty = (
+export const useAddFavorite = (
   onSuccess: OnSuccess,
   onError: OnError,
   id: number,
 ) => {
   return useMutation({
-    mutationFn: (formData) => {
+    mutationFn: () => {
       return request({
-        url: `/api/listing/update/${id}`,
-        method: "put",
-        data: formData,
+        url: `/api/favorite/add/${id}`,
+        method: "post",
+        data: {},
       });
     },
     onSuccess: onSuccess,

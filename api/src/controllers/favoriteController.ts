@@ -53,7 +53,10 @@ class FavoriteController {
     } catch (error: any) {
       return res
         .status(500)
-        .json({ message: "Delete failed", error: error.message });
+        .json({
+          message: "unmarking as favorited failed",
+          error: error.message,
+        });
     }
   };
 
@@ -84,13 +87,19 @@ class FavoriteController {
 
   static getFavoritesByUser = async (req: SupabaseRequest, res: Response) => {
     try {
+      const { page = "1", limit = "10", search = "" } = req.query;
       const userId = req.currentUser?.id!;
-      const favorites = await FavoriteService.getFavoritesByUser(userId);
+      const favorites = await FavoriteService.getFavoritesByUser(
+        userId,
+        parseInt(page as string, 10),
+        parseInt(limit as string, 10),
+        search as string,
+      );
       return res.status(200).json(favorites);
     } catch (error) {
       return res
         .status(400)
-        .json({ message: "getting favorites failed", error });
+        .json({ message: "Getting favorites failed", error });
     }
   };
 }
