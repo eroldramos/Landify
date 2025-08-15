@@ -19,7 +19,7 @@ router.delete(
 
 router.delete(
   "/favorite/delete/{:id}",
-  SupabaseMiddleware.authenticateAsAdmin,
+  SupabaseMiddleware.authenticate,
   FavoriteController.removeFavorite,
 );
 
