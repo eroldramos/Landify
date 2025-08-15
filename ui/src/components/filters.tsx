@@ -103,11 +103,11 @@ export function Filters() {
         {/* Price Range Filter */}
 
         <PriceScaler
-          min={filters?.priceRange[0] || 0}
-          max={filters?.priceRange[0] || 10000000}
+          min={0}
+          max={10000000}
           step={25}
-          defaultMinValue={filters?.priceRange[0] || 0}
-          defaultMaxValue={filters?.priceRange[0] || 10000000}
+          defaultMinValue={0}
+          defaultMaxValue={10000000}
           onValueChange={(values) => handlePriceRangeChange(values)}
         />
       </div>

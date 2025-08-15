@@ -26,7 +26,7 @@ function formatPrice(priceCents: number) {
     currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(priceCents / 100);
+  }).format(priceCents);
 }
 
 export function PropertyCard({ listing }: PropertyCardProps) {

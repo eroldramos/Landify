@@ -65,15 +65,15 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
     }));
   };
 
-  const formatPrice = (cents: number): string => {
-    return (cents / 100).toFixed(2);
-  };
+  // const formatPrice = (cents: number): string => {
+  //   return (cents / 100).toFixed(2);
+  // };
 
-  const parsePriceInput = (priceString: string): number => {
-    const cleaned = priceString.replace(/[^\d.]/g, "");
-    const parsed = Number.parseFloat(cleaned);
-    return isNaN(parsed) ? 0 : Math.round(parsed * 100);
-  };
+  // const parsePriceInput = (priceString: string): number => {
+  //   const cleaned = priceString.replace(/[^\d.]/g, "");
+  //   const parsed = Number.parseFloat(cleaned);
+  //   return isNaN(parsed) ? 0 : Math.round(parsed * 100);
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,12 +200,9 @@ export function PropertyListingForm({ initialData }: PropertyListingFormProps) {
                 id="price"
                 type="text"
                 placeholder="0.00"
-                value={formatPrice(formData.priceCents)}
+                value={formData.priceCents}
                 onChange={(e) =>
-                  handleInputChange(
-                    "priceCents",
-                    parsePriceInput(e.target.value),
-                  )
+                  handleInputChange("priceCents", parseInt(e.target.value))
                 }
                 required
                 className="w-full pl-8"

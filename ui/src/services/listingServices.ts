@@ -33,17 +33,18 @@ export const useGetListings = ({
           `propertyType=${propertyType === "ALL" ? "" : propertyType}`,
         );
       }
-
-      if (priceRange[0] != 0 && priceRange[0] >= priceRange[1]) {
+      console.log(priceRange[0] != 0 && priceRange[0] >= priceRange[1]);
+      if (priceRange[0] != 0 && priceRange[0] < priceRange[1]) {
         filters.push(`minPrice=${priceRange[0]}`);
       }
 
-      if (priceRange[1] != 0 && priceRange[1] <= priceRange[0]) {
+      if (priceRange[1] != 10000000 && priceRange[1] > priceRange[0]) {
         filters.push(`maxPrice=${priceRange[1]}`);
       }
 
       url += filters.join("&");
 
+      console.log(url);
       return request({
         url: url,
       });

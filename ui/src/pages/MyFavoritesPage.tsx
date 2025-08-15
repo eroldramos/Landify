@@ -283,7 +283,7 @@ function formatPrice(priceCents: number): string {
     currency: "USD",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(priceCents / 100);
+  }).format(priceCents);
 }
 
 function getPropertyIcon(type: string) {
