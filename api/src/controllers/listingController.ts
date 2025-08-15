@@ -6,7 +6,8 @@ import type {
   ListingStatus,
   PropertyType,
 } from "../generated/prisma/index.js";
-
+import ImageService from "../services/imageServices";
+const bucketName = "landify-bucket";
 class ListingController {
   static createListingOne = async (req: SupabaseRequest, res: Response) => {
     try {
@@ -62,10 +63,34 @@ class ListingController {
   };
 
   static deleteListingOne = async (req: SupabaseRequest, res: Response) => {
+    function getFilePathFromPublicUrl(
+      url: string,
+      bucketName: string,
+    ): string | null {
+      const base = `https://bfrjareptubsqfznqlpa.supabase.co/storage/v1/object/public/${bucketName}/`;
+      if (!url.startsWith(base)) return null;
+      return url.substring(base.length);
+    }
     try {
       const id = parseInt(req.params.id, 10);
       if (isNaN(id)) {
         return res.status(400).json({ message: "Invalid listing ID" });
+      }
+
+      const listingFound = await ListingService.getListingById(id);
+      if (!listingFound)
+        return res
+          .status(400)
+          .json({ message: "Listing is not found with this id" });
+      if (!listingFound?.images) {
+        console.log("=======================ERROR");
+        const filePaths = listingFound?.images
+          .map((image: any) => getFilePathFromPublicUrl(image?.url, bucketName))
+          .filter((p: any): p is string => !!p);
+
+        const removeImagesFromBucket = await ImageService.removeImages(
+          filePaths,
+        );
       }
 
       const deleteListing = await ListingService.deleteListing(id);

@@ -95,3 +95,21 @@ export const useUpdateProperty = (
     onError: onError,
   });
 };
+
+export const useRemoveListing = (
+  onSuccess: OnSuccess,
+  onError: OnError,
+  id: number,
+) => {
+  return useMutation({
+    mutationFn: (formData) => {
+      return request({
+        url: `/api/listing/delete/${id}`,
+        method: "delete",
+        data: formData,
+      });
+    },
+    onSuccess: onSuccess,
+    onError: onError,
+  });
+};

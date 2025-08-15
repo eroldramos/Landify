@@ -5,6 +5,7 @@ import type {
   ListingStatus,
   Prisma,
   Favorite,
+  Image,
 } from "../generated/prisma";
 const prisma = new PrismaClient();
 class ListingService {
@@ -42,7 +43,12 @@ class ListingService {
     id: number,
     currentUserId?: number,
   ): Promise<
-    (Listing & { favorites: Favorite[]; favoritesCount: number }) | null
+    | (Listing & {
+        favorites: Favorite[];
+        favoritesCount: number;
+        images: Image[];
+      })
+    | null
   > => {
     const listing = await prisma.listing.findUnique({
       where: { id },

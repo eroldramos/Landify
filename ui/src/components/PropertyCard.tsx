@@ -1,4 +1,4 @@
-import { Heart, MapPin, User, ImageIcon, Edit } from "lucide-react";
+import { Heart, MapPin, User, ImageIcon, Edit, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -13,6 +13,8 @@ import { useAuthStore } from "@/store/appStore";
 import { useAddFavorite, useRemoveFavorite } from "@/services/favoriteServices";
 import { showToast } from "@/utils/toast-utils";
 import { invalidateQuery } from "@/utils/query-utils";
+import { useRemoveListing } from "@/services/listingServices";
+import Swal from "sweetalert2";
 
 interface PropertyCardProps {
   listing: Listing;
@@ -68,6 +70,37 @@ export function PropertyCard({ listing }: PropertyCardProps) {
     listing?.id,
   );
 
+  const removeListing = useRemoveListing(
+    () => {
+      showToast("success", {
+        message: "Listing deleted",
+      });
+      invalidateQuery(["useGetListings"]);
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    listing?.id,
+  );
+
+  const toggleDelete = () => {
+    Swal.fire({
+      title: `Are you sure you want to delete this listing with an ID of ${listing?.id}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "black",
+      cancelButtonColor: "gray",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeListing.mutate();
+      }
+    });
+  };
+
   const toggleFavorite = () => {
     if (!auth?.accessToken) {
       showToast("warning", { message: "Please login to mark as favorite" });
@@ -110,6 +143,16 @@ export function PropertyCard({ listing }: PropertyCardProps) {
                 }
               >
                 <Edit className="h-4 w-4 text-gray-600" />
+              </Button>
+            )}
+            {auth?.role == "ADMIN" && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/80 hover:bg-white cursor-pointer"
+                onClick={toggleDelete}
+              >
+                <Trash2 className="h-4 w-4 text-red-600" />
               </Button>
             )}
             <Button
