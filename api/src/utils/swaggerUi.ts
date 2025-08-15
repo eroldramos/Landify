@@ -28,8 +28,6 @@ const swaggerDefinition = {
 };
 
 export function setupSwagger(app: Express, ROOT_FOLDER: string): void {
-  console.log(ROOT_FOLDER, "=====================================");
-
   const options: swaggerJSDoc.Options = {
     swaggerDefinition,
     // ✅ Match both .ts (dev) and .js (prod) files with absolute path

@@ -83,7 +83,6 @@ class ListingController {
           .status(400)
           .json({ message: "Listing is not found with this id" });
       if (!listingFound?.images) {
-        console.log("=======================ERROR");
         const filePaths = listingFound?.images
           .map((image: any) => getFilePathFromPublicUrl(image?.url, bucketName))
           .filter((p: any): p is string => !!p);

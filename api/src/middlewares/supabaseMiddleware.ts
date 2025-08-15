@@ -37,7 +37,6 @@ class SupabaseMiddleware {
 
     try {
       const email = await SupabaseService.supabaseIsUserAuthenticated(token); //return email
-      console.log(email);
       req.currentUser = await AuthService.findUserByEmail(email);
       next();
     } catch (error) {

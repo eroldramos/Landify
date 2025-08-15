@@ -94,8 +94,6 @@ class ImageController {
 
       const removeImagesFromBucket = await ImageService.removeImages(filePaths);
 
-      console.log(removeImagesFromBucket);
-
       return res.json({
         message: "Images deleted successfully",
         files: deletedImages,

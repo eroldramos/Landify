@@ -322,7 +322,7 @@ export function ImageEditForm({
               <Button
                 onClick={handleImageUpload}
                 disabled={uploadImagesMutate?.isPending}
-                className="min-w-[120px]"
+                className="min-w-[120px] cursor-pointer"
               >
                 {uploadImagesMutate?.isPending
                   ? "Uploading..."

@@ -36,7 +36,6 @@ export function PropertyCard({ listing }: PropertyCardProps) {
   const isFavorited = listing?.favorites?.some(
     (item) => item?.userId === auth?.id,
   );
-  console.log(isFavorited);
   const primaryImage =
     listing.images.find((img) => img.position === 1) || listing.images[0];
 

@@ -319,7 +319,6 @@ function PropertyCard({ favorite }: { favorite: Favorite }) {
     return null; // Skip favorites with null listings
   }
 
-  console.log(listing?.id);
   const primaryImage =
     listing.images.find((img) => img.position === 1) || listing.images[0];
   const imageUrl =
