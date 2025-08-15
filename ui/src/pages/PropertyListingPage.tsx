@@ -87,7 +87,7 @@ export default function PropertyListingPage() {
                 setFilters({
                   propertyType: "",
                   status: "",
-                  priceRange: [0, 1000000],
+                  priceRange: [0, 10000000],
                 });
                 navigate("/");
               }}
