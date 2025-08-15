@@ -11,8 +11,10 @@ import {
 import type { PropertyType, ListingStatus } from "../types/schema";
 import { PriceScaler } from "./PriceScaler/PriceScaler";
 import { useAppStore } from "@/store/appStore";
+import { useRef } from "react";
 
 export function Filters() {
+  const priceScalerRef = useRef<{ reset: () => void }>(null);
   const { filters, setFilters } = useAppStore();
   const handlePropertyTypeChange = (value: string) => {
     setFilters({
@@ -63,8 +65,10 @@ export function Filters() {
             setFilters({
               propertyType: "",
               status: "",
-              priceRange: [0, 1000000],
+              priceRange: [0, 10000000],
             });
+            // Reset the PriceScaler component
+            priceScalerRef.current?.reset();
           }}
         >
           Clear All
@@ -103,6 +107,7 @@ export function Filters() {
         {/* Price Range Filter */}
 
         <PriceScaler
+          ref={priceScalerRef}
           min={0}
           max={10000000}
           step={25}
