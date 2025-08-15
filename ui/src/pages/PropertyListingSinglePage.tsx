@@ -14,15 +14,18 @@ import {
   ChevronLeft,
   ChevronRight,
   EditIcon,
+  ImageIcon,
+  Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetListingOne } from "@/services/listingServices";
+import { useGetListingOne, useRemoveListing } from "@/services/listingServices";
 import { useAuthStore } from "@/store/appStore";
 import LoadingScreen from "@/components/LoadingScreens/LoadingScreen";
 import { showToast } from "@/utils/toast-utils";
 import { useAddFavorite, useRemoveFavorite } from "@/services/favoriteServices";
 import { invalidateQuery } from "@/utils/query-utils";
+import Swal from "sweetalert2";
 
 // Mock data
 // const propertyData = {
@@ -94,7 +97,7 @@ export default function PropertyListingSinglePage() {
         message: error?.response?.data?.message,
       });
     },
-    parseInt(listingId!),
+    id,
   );
 
   const removeFavoriteMutate = useRemoveFavorite(
@@ -109,7 +112,7 @@ export default function PropertyListingSinglePage() {
         message: error?.response?.data?.message,
       });
     },
-    parseInt(listingId!),
+    id,
   );
 
   useEffect(() => {
@@ -128,7 +131,7 @@ export default function PropertyListingSinglePage() {
       currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
-    }).format(priceCents / 100);
+    }).format(priceCents);
   };
 
   // Format date
@@ -177,6 +180,35 @@ export default function PropertyListingSinglePage() {
       addFavoriteMutate.mutate();
     }
   };
+  const removeListing = useRemoveListing(
+    () => {
+      showToast("success", {
+        message: "Listing deleted",
+      });
+      navigate("/");
+    },
+    (error) => {
+      showToast("error", {
+        message: error?.response?.data?.message,
+      });
+    },
+    id,
+  );
+  const toggleDelete = () => {
+    Swal.fire({
+      title: `Are you sure you want to delete this listing with an ID of ${id}`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "black",
+      cancelButtonColor: "gray",
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        removeListing.mutate();
+      }
+    });
+  };
 
   return (
     <>
@@ -212,7 +244,11 @@ export default function PropertyListingSinglePage() {
                     variant="outline"
                     size="sm"
                     onClick={toggleFavorite}
-                    className={isFavorited ? "text-red-600 border-red-200" : ""}
+                    className={
+                      isFavorited
+                        ? "text-red-600 border-red-200 cursor-pointer"
+                        : "cursor-pointer"
+                    }
                   >
                     <Heart
                       className={`w-4 h-4 mr-2 ${
@@ -221,15 +257,22 @@ export default function PropertyListingSinglePage() {
                     />
                     {isFavorited ? "Favorited" : "Add to Favorites"}
                   </Button>
-                  <Button variant="outline" size="sm">
-                    <Share className="w-4 h-4 mr-2" />
-                    Share
-                  </Button>
-
+                  {auth?.role == "ADMIN" && (
+                    <Button
+                      className="cursor-pointer"
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleDelete}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  )}
                   {auth?.role === "ADMIN" && (
                     <Button
                       variant="outline"
                       size="sm"
+                      className="cursor-pointer"
                       onClick={() =>
                         navigate(`/admin/list_property/edit/${listingId}`)
                       }
@@ -250,21 +293,29 @@ export default function PropertyListingSinglePage() {
                   <CardContent className="p-0">
                     <div className="relative">
                       <div className="aspect-[16/10] relative overflow-hidden rounded-t-lg">
-                        <img
-                          src={
-                            propertyData?.data?.images[currentImageIndex]
-                              ?.url || `/placeholder.svg?height=400&width=600`
-                          }
-                          alt={
-                            propertyData?.data?.images[currentImageIndex]
-                              ?.altText || "Property image"
-                          }
-                          className="object-cover w-full h-full"
-                          style={{
-                            position: "absolute",
-                            inset: 0,
-                          }}
-                        />
+                        {" "}
+                        {propertyData?.data?.images?.length != 0 ? (
+                          <img
+                            src={
+                              propertyData?.data?.images[currentImageIndex]
+                                ?.url || `/placeholder.svg?height=400&width=600`
+                            }
+                            alt={
+                              propertyData?.data?.images[currentImageIndex]
+                                ?.altText || "Property image"
+                            }
+                            className="object-cover w-full h-full"
+                            style={{
+                              position: "absolute",
+                              inset: 0,
+                            }}
+                          />
+                        ) : (
+                          <div className="flex flex-col items-center justify-center text-gray-400 h-full w-full">
+                            <ImageIcon className="h-12 w-12 mb-2" />
+                            <span className="text-sm">No Images</span>
+                          </div>
+                        )}
                         {propertyData?.data?.images.length > 1 && (
                           <>
                             <Button
