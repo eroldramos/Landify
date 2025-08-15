@@ -140,7 +140,7 @@ class ListingController {
         sortOrder = "desc",
         search,
         minPrice = "0",
-        maxPrice = "10000000",
+        maxPrice = "1000000",
         favoritedByUserId,
       } = req.query;
 

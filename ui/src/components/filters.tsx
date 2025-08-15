@@ -55,7 +55,18 @@ export function Filters() {
             </Badge>
           )}
         </div>
-        <Button variant="ghost" size="sm" className="text-sm text-gray-600">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-sm text-gray-600"
+          onClick={() => {
+            setFilters({
+              propertyType: "",
+              status: "",
+              priceRange: [0, 1000000],
+            });
+          }}
+        >
           Clear All
         </Button>
       </div>
