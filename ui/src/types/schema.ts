@@ -2,8 +2,8 @@ import type { AxiosError } from "axios";
 
 // enums from your Prisma schema
 export type Role = "REGULAR" | "ADMIN";
-export type PropertyType = "APARTMENT" | "HOUSE" | "COMMERCIAL";
-export type ListingStatus = "FOR_SALE" | "FOR_RENT";
+export type PropertyType = "APARTMENT" | "HOUSE" | "COMMERCIAL" | "ALL";
+export type ListingStatus = "FOR_SALE" | "FOR_RENT" | "ALL";
 
 // Favorite model
 export type Favorite = {
